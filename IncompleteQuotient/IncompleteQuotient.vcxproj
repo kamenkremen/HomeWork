@@ -21,8 +21,8 @@
   <PropertyGroup Label="Globals">
     <VCProjectVersion>17.0</VCProjectVersion>
     <Keyword>Win32Proj</Keyword>
-    <ProjectGuid>{a56505ea-20bc-4ead-8174-6d99b1b55f06}</ProjectGuid>
-    <RootNamespace>task1</RootNamespace>
+    <ProjectGuid>{785e7777-38bf-45a1-87ff-6b4269b28641}</ProjectGuid>
+    <RootNamespace>IncompleteQuotient</RootNamespace>
     <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
@@ -127,7 +127,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="task1.cpp" />
+    <ClCompile Include="IncompleteQuotient.c" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
