@@ -34,38 +34,34 @@ int isPalindrome(char* string)
     return 1;
 }
 
-bool isPalindromeTest(void)
+int isPalindromeTest(void)
 {
     char* stringTest = "nePalindrom";
     if (isPalindrome(stringTest))
     {
-        return true;
+        return 1;
     } 
     stringTest = "aBobA";
     if (isPalindrome(stringTest))
     {
-        return true;
+        return 2;
     }
     stringTest = "abOba";
     if (!isPalindrome(stringTest))
     {
-        return true;
+        return 3;
     }
     stringTest = "a b    o b       a";
     if (!isPalindrome(stringTest))
     {
-        return true;
+        return 4;
     }
-    return false;
+    return 0;
 }
 
 int tests(void)
 {
-    if (isPalindromeTest())
-    {
-        return 1;
-    }
-    return 0;
+    return isPalindromeTest();
 }
 
 int main()
