@@ -7,8 +7,6 @@
 #include "sortings.h"
 #include <string.h>
 
-#define _CRT_SECURE_NO_WARNINGS 1
-
 void fillArrayWithRandomNumbers(int* array, int sizeOfArray)
 {
     for (int i = sizeOfArray - 1; i >= 0; --i)
@@ -240,6 +238,12 @@ int main()
     }
     fclose(file);
     int* array = calloc(amountOfNumbers, sizeof(int));
+    if (array == NULL)
+    {
+        printf("ОШИБКА ВЫДЕЛЕНИЯ ПАМЯТИ");
+        free(array);
+        return 1;
+    }
     int currentNumber = 0;
     int number = 0;
     for (int i = 0; i < strlen(data); ++i)
