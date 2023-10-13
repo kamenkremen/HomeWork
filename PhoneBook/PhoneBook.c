@@ -182,7 +182,7 @@ int readFileAndParseDataTest(void)
 	fclose(file);
 	if (stringsRead < 0)
 	{
-		for (int i = 0; i < 5; ++i)
+		for (size_t i = 0; i < 5; ++i)
 		{
 			free(data[i]);
 		}
@@ -191,7 +191,7 @@ int readFileAndParseDataTest(void)
 	char* supposedData[5] = { "88005553535$test1", "2222222222222$test2", "3$test3", "4$test4", "89082191077$test5" };
 	if (!isTwoArraysEqual(data, supposedData, 5))
 	{
-		for (int i = 0; i < 5; ++i)
+		for (size_t i = 0; i < 5; ++i)
 		{
 			free(data[i]);
 		}
@@ -203,7 +203,7 @@ int readFileAndParseDataTest(void)
 	char* supposedNames[5] = { "test1", "test2", "test3", "test4", "test5" };
 	if (parseData(numbers, names, data, 5) < 0)
 	{
-		for (int i = 0; i < 5; ++i)
+		for (size_t i = 0; i < 5; ++i)
 		{
 			free(data[i]);
 			free(numbers[i]);
@@ -213,7 +213,7 @@ int readFileAndParseDataTest(void)
 	}
 	if (!isTwoArraysEqual(numbers, supposedNumbers, 5) || !isTwoArraysEqual(names, supposedNames, 5))
 	{
-		for (int i = 0; i < 5; ++i)
+		for (size_t i = 0; i < 5; ++i)
 		{
 			free(data[i]);
 			free(numbers[i]);
@@ -221,7 +221,7 @@ int readFileAndParseDataTest(void)
 		}
 		return 41;
 	}
-	for (int i = 0; i < 5; ++i)
+	for (size_t i = 0; i < 5; ++i)
 	{
 		free(data[i]);
 		free(numbers[i]);
