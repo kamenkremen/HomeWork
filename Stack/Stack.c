@@ -1,7 +1,7 @@
 ﻿#include <stdlib.h>
 #include "Stack.h"
 
-typedef int StackValue;
+typedef char StackValue;
 
 struct Stack
 {
