@@ -7,24 +7,27 @@
 #include <Windows.h>
 #include <locale.h>
 
+#define TEST_ARRAY_SIZE 100
+#define TEST_ARRAY_MIN_SIZE 20
+
+const char* TEST_ERRORS[5] = { "", "Insertion sort", "Is sorted function", "Quick sort", "Swap" };
+
 enum ERRORCODES
 {
     ok,
     memoryError,
 };
 
+
+
 int myMax(int firstNumber, int secondNumber)
 {
-    if (firstNumber >= secondNumber)
-    {
-        return firstNumber;
-    }
-    return secondNumber;
+    return firstNumber > secondNumber ? firstNumber : secondNumber;
 }
 
-void fillArrayWithRandomNumbers(int* array, const size_t sizeOfArray)
+void fillArrayWithRandomNumbers(int* const array, const size_t sizeOfArray)
 {
-    for (size_t i = sizeOfArray - 1; i != -1; i--)
+    for (size_t i = sizeOfArray - 1; i != -1; --i)
     {
         array[i] = rand();
     }
@@ -37,22 +40,20 @@ void swap(int* firstElement, int* secondElement)
     *secondElement = thirdElement;
 }
 
-void insertionSort(int* array, const int leftBorder, const int rightBorder)
+void insertionSort(int* const array, const size_t leftBorder, const size_t rightBorder)
 {
     for (size_t i = leftBorder + 1; i < rightBorder; ++i)
     {
         size_t j = i;
-        while (j - 1 >= leftBorder && array[j] < array[j - 1])
+        for (size_t j = i; j - 1 >= leftBorder && array[j] < array[j - 1]; --j)
         {
             swap(&array[j], &array[j - 1]);
-            j--;
         }
     }
 }
 
-void quickSort(int* array, const int leftBorder, const int rightBorder)
+void quickSort(int* const array, const size_t leftBorder, const size_t rightBorder)
 {
-    int splitElement = -1;
     if (rightBorder - leftBorder <= 1)
     {
         return;
@@ -62,6 +63,7 @@ void quickSort(int* array, const int leftBorder, const int rightBorder)
         insertionSort(array, leftBorder, rightBorder);
         return;
     }
+    int splitElement = -1;
     for (size_t i = leftBorder + 1; i < rightBorder; ++i)
     {
         if (array[i - 1] != array[i])
@@ -74,36 +76,27 @@ void quickSort(int* array, const int leftBorder, const int rightBorder)
     {
         return;
     }
-    int firstElementBiggerThanSplit = leftBorder;
-    int lastElementBiggerThanSplt = rightBorder - 1;
-    while (firstElementBiggerThanSplit < lastElementBiggerThanSplt)
+    size_t leftIndex = leftBorder;
+    size_t rightIndex = rightBorder - 1;
+    while (leftIndex < rightIndex)
     {
-
-        while (array[firstElementBiggerThanSplit] < splitElement)
+        while (array[leftIndex] < splitElement && leftIndex != rightBorder - 1)
         {
-            firstElementBiggerThanSplit++;
-            if (firstElementBiggerThanSplit == rightBorder - 1)
-            {
-                break;
-            }
+            ++leftIndex;
         }
-        while (array[lastElementBiggerThanSplt] >= splitElement)
+        while (array[rightIndex] >= splitElement && rightIndex != leftBorder)
         {
-            lastElementBiggerThanSplt--;
-            if (lastElementBiggerThanSplt == leftBorder)
-            {
-                break;
-            }
+            --rightIndex;
         }
-        swap(&array[lastElementBiggerThanSplt], &array[firstElementBiggerThanSplit]);
+        swap(&array[rightIndex], &array[leftIndex]);
     }
-    swap(&array[firstElementBiggerThanSplit], &array[lastElementBiggerThanSplt]);
-    int splitIndex = firstElementBiggerThanSplit;
+    swap(&array[leftIndex], &array[rightIndex]);
+    size_t splitIndex = leftIndex;
     quickSort(array, leftBorder, splitIndex);
     quickSort(array, splitIndex, rightBorder);
 }
 
-bool isSorted(int* array, const int leftBorder, const int rightBorder)
+bool isSorted(const int* const array, const size_t leftBorder, const size_t rightBorder)
 {
     for (size_t i = leftBorder + 1; i < rightBorder; ++i)
     {
@@ -117,22 +110,22 @@ bool isSorted(int* array, const int leftBorder, const int rightBorder)
 
 int testForIsSorted(void)
 {
-    int testArray[100] = { 0 };
-    for (size_t i = 0; i < 100; ++i)
+    int testArray[TEST_ARRAY_SIZE] = { 0 };
+    for (size_t i = 0; i < TEST_ARRAY_SIZE; ++i)
     {
         testArray[i] = i;
     }
-    if (!isSorted(testArray, 0, 100))
+    if (!isSorted(testArray, 0, TEST_ARRAY_SIZE))
     {
         return 1;
     }
     swap(&testArray[0], &testArray[1]);
-    if (isSorted(testArray, 0, 100))
+    if (isSorted(testArray, 0, TEST_ARRAY_SIZE))
     {
         return 2;
     }
     testArray[1] = 1;
-    if (!isSorted(testArray, 0, 100))
+    if (!isSorted(testArray, 0, TEST_ARRAY_SIZE))
     {
         return 3;
     }
@@ -154,10 +147,10 @@ bool testForSwap(void)
     return !(first == secondSecond && second == secondFirst);
 }
 
-int testForSort(void (*sort) (int*, int, int))
+int testForSort(void (*sort) (int* const, const size_t, const size_t))
 {
-    const size_t arraySize = rand() % 100 + 20;
-    int* testArray =(int *) calloc(arraySize, sizeof(int));
+    const size_t arraySize = rand() % TEST_ARRAY_SIZE + TEST_ARRAY_MIN_SIZE;
+    int* testArray = (int *)calloc(arraySize, sizeof(int));
     fillArrayWithRandomNumbers(testArray, arraySize);
     sort(testArray, 0, arraySize);
     if (!isSorted(testArray, 0, arraySize))
@@ -196,7 +189,7 @@ int tests(void)
     }
     if (testForSwap() != ok)
     {
-        return 4;
+        return 41;
     }
     return ok;
 }
@@ -205,12 +198,14 @@ int main(void)
 {
     srand(time(NULL));
     setlocale(LC_ALL, "Russian");
+    char* errorOutput = "";
     int errorCode = tests();
     if (errorCode != 0)
     {
-        printf("ОШИБКА %d\n", errorCode);
+
+        printf("%s ERROR, TEST CASE %d\n", TEST_ERRORS[errorCode / 10], errorCode % 10);
         return errorCode;
     }
-    printf("Ошибок не обнаружено!");
-    return 0;
+    printf("Ошибок не обнаружено!\n");
+    return ok;
 }
