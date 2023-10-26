@@ -198,11 +198,9 @@ int main(void)
 {
     srand(time(NULL));
     setlocale(LC_ALL, "Russian");
-    char* errorOutput = "";
     int errorCode = tests();
     if (errorCode != 0)
     {
-
         printf("%s ERROR, TEST CASE %d\n", TEST_ERRORS[errorCode / 10], errorCode % 10);
         return errorCode;
     }
