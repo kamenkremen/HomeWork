@@ -4,6 +4,7 @@
 #include <malloc.h>
 #include <time.h>
 #include <float.h>
+#include <limits.h>
 
 #define TEST_ARRAY_SIZE 100000
 
@@ -45,7 +46,7 @@ int myMin(const int firstNumber, const int secondNumber)
 
 void bubbleSort(int* array, const int sizeOfArray)
 {
-    for (size_t i = 0; i < sizeOfArray; i++)
+    for (size_t i = 0; i < sizeOfArray; ++i)
     {
         for (size_t j = 0; j < sizeOfArray - 1 - i; j++)
         {
@@ -63,7 +64,7 @@ void countingSort(int* array, const int sizeOfArray)
 
     int maximumElement = INT_MIN;
     int minimumElement = INT_MAX;
-    for (size_t i = 0; i < sizeOfArray; i++)
+    for (size_t i = 0; i < sizeOfArray; ++i)
     {
         maximumElement = myMax(array[i], maximumElement);
         minimumElement = myMin(array[i], minimumElement);
@@ -71,12 +72,12 @@ void countingSort(int* array, const int sizeOfArray)
     int sizeOfArrayWithNumbersOfNumbers = maximumElement - minimumElement + 1;
     int* arrayWithNumbersOfNumbers = calloc(sizeOfArrayWithNumbersOfNumbers, sizeof(int));
     minimumElement *= -1;
-    for (size_t i = 0; i < sizeOfArray; i++)
+    for (size_t i = 0; i < sizeOfArray; ++i)
     {
         arrayWithNumbersOfNumbers[array[i] + minimumElement]++;
     }
     int currentElementInSortedArray = 0;
-    for (size_t i = 0; i < sizeOfArrayWithNumbersOfNumbers; i++)
+    for (size_t i = 0; i < sizeOfArrayWithNumbersOfNumbers; ++i)
     {
         for (; arrayWithNumbersOfNumbers[i] > 0; arrayWithNumbersOfNumbers[i]--)
         {
@@ -89,7 +90,7 @@ void countingSort(int* array, const int sizeOfArray)
 
 void fillArrayWithRandomNumbers(int* array, const int sizeOfArray)
 {
-    for (size_t i = 0; i < sizeOfArray; i++)
+    for (size_t i = 0; i < sizeOfArray; ++i)
     {
         array[i] = rand();
     }
@@ -120,7 +121,7 @@ void testBubbleSortVSCountingSort(void)
     double min = DBL_MAX;
     double max = DBL_MIN;
     double mean = 0;
-    for (size_t i = 0; i < 5; i++) 
+    for (size_t i = 0; i < 5; ++i) 
     {
         fillArrayWithRandomNumbers(array, TEST_ARRAY_SIZE);
         double curentTime = countingSortTime(array, TEST_ARRAY_SIZE);
@@ -134,7 +135,7 @@ void testBubbleSortVSCountingSort(void)
     max = DBL_MIN;
     mean = 0;
     printf("Bubble sort is going to take a minute or two, please wait.\n");
-    for (size_t i = 0; i < 5; i++)
+    for (size_t i = 0; i < 5; ++i)
     {
         fillArrayWithRandomNumbers(array, TEST_ARRAY_SIZE);
         double curentTime = bubbleSortTime(array, TEST_ARRAY_SIZE);
@@ -161,10 +162,10 @@ int main(void)
     printf("Enter the size of array:");
     scanf_s("%d", &sizeOfArray);
     printf("Enter the array:");
-    int* arrayForBubbleSort = malloc(sizeOfArray * sizeof(int));
-    int* arrayForCountingSort = malloc(sizeOfArray * sizeof(int));
+    int* arrayForBubbleSort = (int*) malloc(sizeOfArray * sizeof(int));
+    int* arrayForCountingSort = (int*) malloc(sizeOfArray * sizeof(int));
 
-    for (size_t i = 0; i < sizeOfArray; i++)
+    for (size_t i = 0; i < sizeOfArray; ++i)
     {
         int element = 0;
         scanf_s("%d", &element);
@@ -173,13 +174,13 @@ int main(void)
     }
     bubbleSort(arrayForBubbleSort, sizeOfArray);
     countingSort(arrayForCountingSort, sizeOfArray);
-    printf("Bubble sort: ");
-    for (size_t i = 0; i < sizeOfArray; i++)
+    printf("Bubble sort:\n");
+    for (size_t i = 0; i < sizeOfArray; ++i)
     {
         printf("%d ", arrayForBubbleSort[i]);
     }
-    printf("\nCounting sort: ");
-    for (int i = 0; i < sizeOfArray; i++)
+    printf("\nCounting sort:\n");
+    for (int i = 0; i < sizeOfArray; ++i)
     {
         printf("%d ", arrayForCountingSort[i]);
     }
