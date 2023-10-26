@@ -48,7 +48,7 @@ void bubbleSort(int* array, const int sizeOfArray)
 {
     for (size_t i = 0; i < sizeOfArray; ++i)
     {
-        for (size_t j = 0; j < sizeOfArray - 1 - i; j++)
+        for (size_t j = 0; j < sizeOfArray - 1 - i; ++j)
         {
             if (array[j] > array[j + 1]) {
                 int numberForSwap = array[j];
