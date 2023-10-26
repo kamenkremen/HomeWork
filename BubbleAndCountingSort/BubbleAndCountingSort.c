@@ -31,7 +31,7 @@ int myMin(const int firstNumber, const int secondNumber)
     return firstNumber < secondNumber ? firstNumber : secondNumber;
 }
 
-void bubbleSort(int* array, const int sizeOfArray)
+void bubbleSort(int* const array, const size_t sizeOfArray)
 {
     for (size_t i = 0; i < sizeOfArray; ++i)
     {
@@ -46,7 +46,7 @@ void bubbleSort(int* array, const int sizeOfArray)
     }
 }
 
-void countingSort(int* const array, const int sizeOfArray)
+void countingSort(int* const array, const size_t sizeOfArray)
 {
     int maximumElement = INT_MIN;
     int minimumElement = INT_MAX;
@@ -55,26 +55,26 @@ void countingSort(int* const array, const int sizeOfArray)
         maximumElement = myMax(array[i], maximumElement);
         minimumElement = myMin(array[i], minimumElement);
     }
-    int sizeOfArrayWithNumbersOfNumbers = maximumElement - minimumElement + 1;
-    int* arrayWithNumbersOfNumbers = (int*) calloc(sizeOfArrayWithNumbersOfNumbers, sizeof(int));
+    const size_t sizeOfCountingArray = maximumElement - minimumElement + 1;
+    int* countingArray = (int*) calloc(sizeOfCountingArray, sizeof(int));
     minimumElement *= -1;
     for (size_t i = 0; i < sizeOfArray; ++i)
     {
-        ++arrayWithNumbersOfNumbers[array[i] + minimumElement];
+        ++countingArray[array[i] + minimumElement];
     }
-    int currentElementInSortedArray = 0;
-    for (size_t i = 0; i < sizeOfArrayWithNumbersOfNumbers; ++i)
+    size_t currentElementInSortedArray = 0;
+    for (size_t i = 0; i < sizeOfCountingArray; ++i)
     {
-        for (; arrayWithNumbersOfNumbers[i] > 0; --arrayWithNumbersOfNumbers[i])
+        for (; countingArray[i] > 0; --countingArray[i])
         {
             array[currentElementInSortedArray] = (i - minimumElement);
             ++currentElementInSortedArray;
         }
     }
-    free(arrayWithNumbersOfNumbers);
+    free(countingArray);
 }
 
-void fillArrayWithRandomNumbers(int* array, const int sizeOfArray)
+void fillArrayWithRandomNumbers(int* array, const size_t sizeOfArray)
 {
     for (size_t i = 0; i < sizeOfArray; ++i)
     {
@@ -82,10 +82,10 @@ void fillArrayWithRandomNumbers(int* array, const int sizeOfArray)
     }
 }
 
-double sortTime(int* array, const int arraySize, void (*sort) (int*, size_t))
+double sortTime(int* array, const size_t arraySize, void (*sort) (int* const, const size_t))
 {
     clock_t beforeSort = clock();
-    sort(array, TEST_ARRAY_SIZE);
+    sort(array, TEST_ARRAY_SIZE);   
     clock_t afterSort = clock();
     double duration = (double)(afterSort - beforeSort) / CLOCKS_PER_SEC;
     return duration;
@@ -117,8 +117,10 @@ void testBubbleSortVSCountingSort(void)
     }
     meanCount /= NUMBER_OF_ITERATIONS;
     meanBubble /= NUMBER_OF_ITERATIONS;
-    printf("Counting sort mean time was %2.5fs and the spread was ~%2.5fs on sorting the random-filled array with size %d\n", meanCount, myDoubleMax(abs(maxCount - meanCount), abs(meanCount - minCount)), TEST_ARRAY_SIZE);
-    printf("Bubble sort mean time was %2.5fs and the spread was ~%2.5fs on sorting the random-filled array with size %d\n", meanBubble, myDoubleMax(abs(maxBubble - meanBubble), abs(meanBubble - minBubble)), TEST_ARRAY_SIZE);
+    printf("Counting sort mean time was %2.5fs and the spread was ~%2.5fs on sorting the random-filled array with size %d\n",\
+        meanCount, myDoubleMax(abs(maxCount - meanCount), abs(meanCount - minCount)), TEST_ARRAY_SIZE);
+    printf("Bubble sort mean time was %2.5fs and the spread was ~%2.5fs on sorting the random-filled array with size %d\n",\
+        meanBubble, myDoubleMax(abs(maxBubble - meanBubble), abs(meanBubble - minBubble)), TEST_ARRAY_SIZE);
 }
 
 void printArray(const int* array, const size_t size)
@@ -133,7 +135,8 @@ void printArray(const int* array, const size_t size)
 int main(void) 
 {
     srand(time(NULL));
-    printf("Do you wish to sort your array or to compare bubble sort and counting sort?\nType 1  to compare bubble sort and counting sort or any other number to sort your array\n");
+    printf("Do you wish to sort your array or to compare bubble sort and counting sort?\nType 1  to compare bubble");
+    printf("sort and counting sort or any other number to sort your array\n");
     int userAnswer = 0;
     scanf_s("%d", &userAnswer);
     if (userAnswer == 1)
@@ -141,7 +144,7 @@ int main(void)
         testBubbleSortVSCountingSort();
         return 0;
     }
-    int sizeOfArray = 0;
+    size_t sizeOfArray = 0;
     printf("Enter the size of array:");
     scanf_s("%d", &sizeOfArray);
     printf("Enter the array:");
