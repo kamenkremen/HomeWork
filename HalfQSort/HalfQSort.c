@@ -6,11 +6,11 @@
 
 #define ARRAY_SIZE 20
 
-void fillArrayWithRandomNumbers(int array[], int sizeOfArray)
+void fillArrayWithRandomNumbers(int* array, const int sizeOfArray)
 {
-    for (int i = sizeOfArray - 1; i >= 0; i--)
+    for (size_t i = sizeOfArray; i >= 1; i--)
     {
-        array[i] = rand();
+        array[i - 1] = rand();
     }
 }
 
@@ -50,7 +50,7 @@ void halfQSort(int* array, const int arraySize)
     swap(&array[firstElementBiggerThanFirst], &array[lastElementBiggerThanFirst]);
 }
 
-int main()
+int main(void)
 {
     srand(time(NULL));
     int array[ARRAY_SIZE] = { 0 };
