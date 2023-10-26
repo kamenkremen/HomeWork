@@ -18,25 +18,17 @@ int myMax(const int firstNumber, const int secondNumber)
 
 double myDoubleMax(const double firstNumber, const double secondNumber)
 {
-    return firstNumber < secondNumber ? firstNumber : secondNumber;
+    return firstNumber > secondNumber ? firstNumber : secondNumber;
 }
 
 double myDoubleMin(const double firstNumber, const double secondNumber)
 {
-    if (firstNumber <= secondNumber)
-    {
-        return firstNumber;
-    }
-    return secondNumber;
+    return firstNumber < secondNumber ? firstNumber : secondNumber;
 }
 
 int myMin(const int firstNumber, const int secondNumber)
 {
-    if (firstNumber <= secondNumber)
-    {
-        return firstNumber;
-    }
-    return secondNumber;
+    return firstNumber < secondNumber ? firstNumber : secondNumber;
 }
 
 void bubbleSort(int* array, const int sizeOfArray)
@@ -56,7 +48,6 @@ void bubbleSort(int* array, const int sizeOfArray)
 
 void countingSort(int* const array, const int sizeOfArray)
 {
-
     int maximumElement = INT_MIN;
     int minimumElement = INT_MAX;
     for (size_t i = 0; i < sizeOfArray; ++i)
