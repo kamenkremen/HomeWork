@@ -119,7 +119,7 @@ void testBubbleSortVSCountingSort(void)
         meanCount += curentTime;
         minCount = myDoubleMin(minCount, curentTime);
         maxCount = myDoubleMax(maxCount, curentTime);
-        curentTime = sortTime(array, TEST_ARRAY_SIZE, bubbleSort);
+        curentTime = sortTime(arrayCopy, TEST_ARRAY_SIZE, bubbleSort);
         meanBubble += curentTime;
         minBubble = myDoubleMin(minBubble, curentTime);
         maxBubble = myDoubleMax(maxBubble, curentTime);
