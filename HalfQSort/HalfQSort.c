@@ -8,9 +8,9 @@
 
 void fillArrayWithRandomNumbers(int* array, const int sizeOfArray)
 {
-    for (size_t i = sizeOfArray; i >= 1; i--)
+    for (size_t i = sizeOfArray - 1; i != -1; --i)
     {
-        array[i - 1] = rand();
+        array[i] = rand();
     }
 }
 
