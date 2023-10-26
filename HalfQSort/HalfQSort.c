@@ -24,30 +24,22 @@ void swap(int* firstElement, int* secondElement)
 void halfQSort(int* array, const int arraySize)
 {
     int firstElement = array[0];
-    int firstElementBiggerThanFirst = 0;
-    int lastElementBiggerThanFirst = arraySize - 1;
-    while (firstElementBiggerThanFirst < lastElementBiggerThanFirst)
+    int leftIndex = 0;
+    int rightIndex = arraySize - 1;
+    while (leftIndex < rightIndex)
     {
 
-        while (array[firstElementBiggerThanFirst] < firstElement)
+        while (array[leftIndex] < firstElement && leftIndex != arraySize - 1)
         {
-            firstElementBiggerThanFirst++;
-            if (firstElementBiggerThanFirst == arraySize - 1)
-            {
-                break;
-            }
+            ++leftIndex;
         }
-        while (array[lastElementBiggerThanFirst] >= firstElement)
+        while (array[rightIndex] >= firstElement && rightIndex != 0)
         {
-            lastElementBiggerThanFirst--;
-            if (lastElementBiggerThanFirst == 0)
-            {
-                break;
-            }
+            --rightIndex;
         }
-        swap(&array[lastElementBiggerThanFirst], &array[firstElementBiggerThanFirst]);
+        swap(&array[rightIndex], &array[leftIndex]);
     }
-    swap(&array[firstElementBiggerThanFirst], &array[lastElementBiggerThanFirst]);
+    swap(&array[leftIndex], &array[rightIndex]);
 }
 
 int main(void)
@@ -62,5 +54,6 @@ int main(void)
     {
         printf("%d ", array[i]);
     }
+    printf("\n");
     return 0;
 }
