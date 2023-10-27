@@ -74,7 +74,7 @@ void countingSort(int* const array, const size_t sizeOfArray)
     free(countingArray);
 }
 
-void fillArrayWithRandomNumbers(int* array, const size_t sizeOfArray)
+void fillArrayWithRandomNumbers(int* const array, const size_t sizeOfArray)
 {
     for (size_t i = 0; i < sizeOfArray; ++i)
     {
@@ -82,7 +82,7 @@ void fillArrayWithRandomNumbers(int* array, const size_t sizeOfArray)
     }
 }
 
-double sortTime(int* array, const size_t arraySize, void (*sort) (int* const, const size_t))
+double sortTime(int* const array, const size_t arraySize, void (*sort) (int* const, const size_t))
 {
     clock_t beforeSort = clock();
     sort(array, TEST_ARRAY_SIZE);   
@@ -117,9 +117,9 @@ void testBubbleSortVSCountingSort(void)
     }
     meanCount /= NUMBER_OF_ITERATIONS;
     meanBubble /= NUMBER_OF_ITERATIONS;
-    printf("Counting sort mean time was %2.5fs and the spread was ~%2.5fs on sorting the random-filled array with size %d\n",\
+    printf("Counting sort mean time was %2.5fs and the spread was ~%2.5fs on sorting the random-filled array with size %d\n",
         meanCount, myDoubleMax(abs(maxCount - meanCount), abs(meanCount - minCount)), TEST_ARRAY_SIZE);
-    printf("Bubble sort mean time was %2.5fs and the spread was ~%2.5fs on sorting the random-filled array with size %d\n",\
+    printf("Bubble sort mean time was %2.5fs and the spread was ~%2.5fs on sorting the random-filled array with size %d\n",
         meanBubble, myDoubleMax(abs(maxBubble - meanBubble), abs(meanBubble - minBubble)), TEST_ARRAY_SIZE);
 }
 
@@ -146,7 +146,7 @@ int main(void)
     }
     size_t sizeOfArray = 0;
     printf("Enter the size of array:");
-    scanf_s("%d", &sizeOfArray);
+    scanf_s("%ld", &sizeOfArray);
     printf("Enter the array:");
     int* arrayForBubbleSort = (int*) malloc(sizeOfArray * sizeof(int));
     int* arrayForCountingSort = (int*) malloc(sizeOfArray * sizeof(int));
