@@ -23,7 +23,6 @@ int symbolsCount(int* const numberOfAccurances, char* const inputFile)
 	while ((symbol = fgetc(file)) != EOF)
 	{
 		const int symbolCode = (int)(symbol);
-		//printf("%c, %d\n", symbol, symbolCode);
 		++numberOfAccurances[symbolCode];
 	}
 
