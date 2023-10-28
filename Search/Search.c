@@ -29,9 +29,9 @@ int myMax(const int firstNumber, const int secondNumber)
     return firstNumber > secondNumber ? firstNumber : secondNumber;
 }
 
-void swap(int* firstElement, int* secondElement)
+void swap(int* const firstElement, int* const secondElement)
 {
-    int thirdElement = *firstElement;
+    const int thirdElement = *firstElement;
     *firstElement = *secondElement;
     *secondElement = thirdElement;
 }
@@ -40,7 +40,6 @@ void insertionSort(int* const array, const size_t leftBorder, const size_t right
 {
     for (size_t i = leftBorder + 1; i < rightBorder; ++i)
     {
-        size_t j = i;
         for (size_t j = i; j > leftBorder && array[j] < array[j - 1]; --j)
         {
             swap(&array[j], &array[j - 1]);
@@ -168,7 +167,6 @@ int testForSort(void (*sort) (int* const, const size_t, const size_t))
     int* testArray = (int*)calloc(arraySize, sizeof(int));
     if (testArray == NULL)
     {
-        free(testArray);
         return memoryError;
     }
     fillArrayWithRandomNumbers(testArray, arraySize);
@@ -228,25 +226,29 @@ int testForIsContained(void)
 
 int tests(void)
 {
-    if (testForSort(insertionSort) != ok)
+    int result = testForSort(insertionSort);
+    if (result != ok)
     {
-        return 10 + testForSort(insertionSort);
+        return 10 + result;
     }
-    if (testForIsSorted() != ok)
+    result = testForIsSorted();
+    if (result != ok)
     {
-        return 20 + testForIsSorted();
+        return 20 + result;
     }
-    if (testForSort(quickSort) != ok)
+    result = testForSort(quickSort);
+    if (result != ok)
     {
-        return 30 + testForSort(quickSort);
+        return 30 + result;
     }
     if (testForSwap())
     {
         return 4;
     }
-    if (testForIsContained() != ok)
+    result = testForIsContained();
+    if (result != ok)
     {
-        return 50 + testForIsContained();
+        return 50 + result;
     }
     return ok;
 }
@@ -260,17 +262,16 @@ int main(void)
         printf("ERROR IN %s TESTS, CASE %d\n", TESTS_ERROR[errorCode / 10], errorCode % 10);
         return errorCode;
     }
-    int n = 0;
+    size_t n = 0;
     printf("Enter the size of the array:");
-    scanf_s("%d", &n);
-    int k = 0;
+    scanf_s("%lu", &n);
+    size_t k = 0;
     printf("Enter the amount of numbers:");
-    scanf_s("%d", &k);
+    scanf_s("%lu", &k);
     int* array = (int*) calloc(n, sizeof(int));
     if (array == NULL)
     {
         printf("MEMORY ERROR");
-        free(array);
         return memoryError;
     }
     fillArrayWithRandomNumbers(array, n);
