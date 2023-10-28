@@ -20,7 +20,7 @@ enum ERRORCODES
 
 
 
-int myMax(int firstNumber, int secondNumber)
+int myMax(const int firstNumber, const int secondNumber)
 {
     return firstNumber > secondNumber ? firstNumber : secondNumber;
 }
@@ -45,7 +45,7 @@ void insertionSort(int* const array, const size_t leftBorder, const size_t right
     for (size_t i = leftBorder + 1; i < rightBorder; ++i)
     {
         size_t j = i;
-        for (size_t j = i; j - 1 >= leftBorder && array[j] < array[j - 1]; --j)
+        for (size_t j = i; j > leftBorder && array[j] < array[j - 1]; --j)
         {
             swap(&array[j], &array[j - 1]);
         }
@@ -91,9 +91,8 @@ void quickSort(int* const array, const size_t leftBorder, const size_t rightBord
         swap(&array[rightIndex], &array[leftIndex]);
     }
     swap(&array[leftIndex], &array[rightIndex]);
-    size_t splitIndex = leftIndex;
-    quickSort(array, leftBorder, splitIndex);
-    quickSort(array, splitIndex, rightBorder);
+    quickSort(array, leftBorder, leftIndex);
+    quickSort(array, leftIndex, rightBorder);
 }
 
 bool isSorted(const int* const array, const size_t leftBorder, const size_t rightBorder)
@@ -149,12 +148,18 @@ bool testForSwap(void)
 
 int testForSort(void (*sort) (int* const, const size_t, const size_t))
 {
-    const size_t arraySize = rand() % TEST_ARRAY_SIZE + TEST_ARRAY_MIN_SIZE;
+    const size_t arraySize = rand() % (TEST_ARRAY_SIZE - TEST_ARRAY_MIN_SIZE) + TEST_ARRAY_MIN_SIZE;
     int* testArray = (int *)calloc(arraySize, sizeof(int));
+    if (testArray == NULL)
+    {
+        free(testArray);
+        return memoryError;
+    }
     fillArrayWithRandomNumbers(testArray, arraySize);
     sort(testArray, 0, arraySize);
     if (!isSorted(testArray, 0, arraySize))
     {
+        free(testArray);
         return 1;
     }
     fillArrayWithRandomNumbers(testArray, arraySize);
@@ -163,10 +168,12 @@ int testForSort(void (*sort) (int* const, const size_t, const size_t))
     testArray[1] = 1;
     if (!isSorted(testArray, 10, arraySize))
     {
+        free(testArray);
         return 2;
     }
     if (isSorted(testArray, 0, arraySize))
     {
+        free(testArray);
         return 3;
     }
     free(testArray);
@@ -198,8 +205,8 @@ int main(void)
 {
     srand(time(NULL));
     setlocale(LC_ALL, "Russian");
-    int errorCode = tests();
-    if (errorCode != 0)
+    const int errorCode = tests();
+    if (errorCode != ok)
     {
         printf("%s ERROR, TEST CASE %d\n", TEST_ERRORS[errorCode / 10], errorCode % 10);
         return errorCode;
