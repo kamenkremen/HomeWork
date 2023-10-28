@@ -3,12 +3,12 @@
 #include <malloc.h>
 #include <time.h>
 #include <stdbool.h>
-#include <Windows.h>
 #include <locale.h>
 
 #define ARRAY_SIZE 100
 #define ARRAY_MIN_SIZE 20
 #define TEST_ARRAY_SIZE 10
+#define MAXIMUM_ELEMENT_IN_ARRAY 50
 
 const char* TEST_ERRORS[6] = { "", "Insertion sort", "Is sorted function", "Quick sort", "Swap", "Most common element"};
 
@@ -27,13 +27,13 @@ void fillArrayWithRandomNumbers(int* const array, const size_t sizeOfArray)
 {
     for (size_t i = sizeOfArray - 1; i != -1; --i)
     {
-        array[i] = rand();
+        array[i] = rand() % MAXIMUM_ELEMENT_IN_ARRAY;
     }
 }
 
-void swap(int* firstElement, int* secondElement)
+void swap(int* const firstElement, int* const secondElement)
 {
-    int thirdElement = *firstElement;
+    const int thirdElement = *firstElement;
     *firstElement = *secondElement;
     *secondElement = thirdElement;
 }
@@ -42,7 +42,6 @@ void insertionSort(int* const array, const size_t leftBorder, const size_t right
 {
     for (size_t i = leftBorder + 1; i < rightBorder; ++i)
     {
-        size_t j = i;
         for (size_t j = i; j > leftBorder && array[j] < array[j - 1]; --j)
         {
             swap(&array[j], &array[j - 1]);
@@ -150,7 +149,6 @@ int testForSort(void (*sort) (int* const, const size_t, const size_t))
     int* testArray = (int*)calloc(arraySize, sizeof(int));
     if (testArray == NULL)
     {
-        free(testArray);
         return memoryError;
     }
     fillArrayWithRandomNumbers(testArray, arraySize);
@@ -237,25 +235,29 @@ int testForFindMostCommonElement(void)
 
 int tests(void)
 {
-    if (testForSort(insertionSort) != ok)
+    int result = testForSort(insertionSort);
+    if (result != ok)
     {
-        return 10 + testForSort(insertionSort);
+        return 10 + result;
     }
-    if (testForIsSorted() != ok)
+    result = testForIsSorted();
+    if (result != ok)
     {
-        return 20 + testForIsSorted();
+        return 20 + result;
     }
-    if (testForSort(quickSort) != ok)
+    result = testForSort(quickSort);
+    if (result != ok)
     {
-        return 30 + testForSort(insertionSort);
+        return 30 + result;
     }
     if (testForSwap() != ok)
     {
         return 41;
     }
-    if (testForFindMostCommonElement() != ok)
+    result = testForFindMostCommonElement();
+    if (result != ok)
     {
-        return 50 + testForFindMostCommonElement();
+        return 50 + result;
     }
     return ok;
 }
