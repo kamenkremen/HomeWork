@@ -2,7 +2,7 @@
 #include <string.h>
 #include <stdio.h>
 
-#include "../Stack/Stack.h"
+#include "Stack.h"
 
 enum ERRORCODES 
 {
@@ -12,7 +12,43 @@ enum ERRORCODES
 	division0Error,
 };
 
-int postfixCalculator(char* string, int* mainErrorCode)
+const char* TEST_ERRORS[4] = { "ok", "POSTFIX CALCULATOR FUNCTION", "STACK", "PROCESSING OPERATION" };
+
+int processTheOperation(const char operation, const int firstNumber, const int secondNumber, int* const errorCode)
+{
+	if (operation == '-')
+	{
+		return firstNumber - secondNumber;
+	}
+	if (operation == '+')
+	{
+		return firstNumber + secondNumber;
+	}
+	if (operation == '*')
+	{
+		return firstNumber * secondNumber;
+	}
+	if (secondNumber == 0)
+	{
+		*errorCode = division0Error;
+		return division0Error;
+	}
+	return firstNumber / secondNumber;
+}
+
+int finish(Stack** stack, int *mainErrorCode, const int errorCode)
+{
+	
+	if (*stack != NULL)
+	{
+		freeStack(stack);
+	}
+	*mainErrorCode = errorCode;
+	return errorCode;
+
+}
+
+int postfixCalculator(const char* const string, int* mainErrorCode)
 {
 	Stack* stack = NULL;
 	for (size_t i = 0; i < strlen(string); ++i)
@@ -23,94 +59,50 @@ int postfixCalculator(char* string, int* mainErrorCode)
 		}
 		if (string[i] == '-' || string[i] == '/' || string[i] == '*' || string[i] == '+')
 		{
-			int errorCode = 0;
-			int firstNumber = top(stack, &errorCode);
-			if (pop(&stack))
+			int errorCode = ok;
+			const int secondNumber = top(stack, &errorCode);
+			if (errorCode != ok)
 			{
-				freeStack(&stack);
-				*mainErrorCode = nullPointerError;
-				return nullPointerError;
+				return finish(&stack, mainErrorCode, errorCode);
 			}
-			if (errorCode)
+			if (pop(&stack) != ok)
 			{
-				freeStack(&stack);
-				*mainErrorCode = errorCode;
-				return errorCode;
+				return finish(&stack, mainErrorCode, nullPointerError);
 			}
-			int secondNumber = top(stack, &errorCode);
-			if (errorCode)
+			const int firstNumber = top(stack, &errorCode);
+			if (errorCode != ok)
 			{
-				freeStack(&stack);
-				*mainErrorCode = errorCode;
-				return errorCode;
+				return finish(&stack, mainErrorCode, errorCode);
 			}
-			if (pop(&stack))
+			if (pop(&stack) != ok)
 			{
-				freeStack(&stack);
-				*mainErrorCode = nullPointerError;
-				return nullPointerError;
+				return finish(&stack, mainErrorCode, nullPointerError);
 			}
-			if (string[i] == '-')
+			const int thirdNumber = processTheOperation(string[i], firstNumber, secondNumber, &errorCode);
+			if (errorCode != ok)
 			{
-				if (push(&stack, secondNumber - firstNumber))
-				{
-					freeStack(&stack);
-					*mainErrorCode = memoryError;
-					return memoryError;
-				}
+				return finish(&stack, mainErrorCode, errorCode);
 			}
-			if (string[i] == '+')
+			if (push(&stack, thirdNumber) != ok)
 			{
-				if (push(&stack, secondNumber + firstNumber))
-				{
-					freeStack(&stack);
-					*mainErrorCode = memoryError;
-					return memoryError;
-				}
-			}
-			if (string[i] == '*')
-			{
-				if (push(&stack, secondNumber * firstNumber))
-				{
-					int errorCode = 0;
-					freeStack(&stack);
-					*mainErrorCode = memoryError;
-					return memoryError;
-				}
-			}
-			if (string[i] == '/')
-			{
-				if (firstNumber == 0)
-				{
-					*mainErrorCode = division0Error;
-					return division0Error;
-				}
-				if (push(&stack, secondNumber / firstNumber))
-				{
-					freeStack(&stack);
-					*mainErrorCode = memoryError;
-					return memoryError;
-				}
+				return finish(&stack, mainErrorCode, memoryError);
 			}
 		}
 		else
 		{
-			if (push(&stack, (int) string[i] - '0'))
+			if (push(&stack, (int) string[i] - '0') != ok)
 			{
-				freeStack(&stack);
-				*mainErrorCode = memoryError;
-				return memoryError;
+				return finish(&stack, mainErrorCode, memoryError);
 			}
 		}
 	}
-	int errorCode = 0;
-	int result = top(stack, &errorCode);
-	freeStack(&stack);
+	int errorCode = ok;
+	const int result = top(stack, &errorCode);
 	if (errorCode)
 	{
-		*mainErrorCode = errorCode;
-		return errorCode;
+		return finish(&stack, mainErrorCode, errorCode);
 	}
+	freeStack(&stack);
 	return result;
 }
 
@@ -143,7 +135,7 @@ int testPostfixCalculator(void)
 int testStack(void)
 {
 	Stack* stack = NULL;
-	if (push(&stack, 10))
+	if (push(&stack, 10) != ok)
 	{
 		freeStack(&stack);
 		return memoryError;
@@ -151,34 +143,61 @@ int testStack(void)
 	int errorCode = 0;
 	if (top(stack, &errorCode) != 10)
 	{
+		freeStack(&stack);
 		return 4;
 	}
 	if (errorCode)
 	{
+		freeStack(&stack);
 		return errorCode;
 	}
-	if (pop(&stack))
+	if (pop(&stack) != ok)
 	{
 		return nullPointerError;
 	}
 	if (!isEmpty(stack))
 	{
+		freeStack(&stack);
 		return 5;
+	}
+	return ok;
+}
+
+int testProcessOperation(void)
+{
+	int errorCode = ok;
+	if (processTheOperation('-', 5, 3, &errorCode) != 2 || errorCode != ok)
+	{
+		return 1;
+	}
+	if (processTheOperation('/', 5, 0, &errorCode) != division0Error || errorCode != division0Error)
+	{
+		return 2;
+	}
+	errorCode = ok;
+	if (processTheOperation('-', 100, -100, &errorCode) != 200 || errorCode != ok)
+	{
+		return 3;
 	}
 	return ok;
 }
 
 int tests(void)
 {
-	int testPostfixCalculatorResult = testPostfixCalculator();
-	if (testPostfixCalculatorResult)
+	const int testPostfixCalculatorResult = testPostfixCalculator();
+	if (testPostfixCalculatorResult != ok)
 	{
 		return 10 + testPostfixCalculatorResult;
 	}
-	int testStackResult = testStack();
-	if (testStackResult)
+	const int testStackResult = testStack();
+	if (testStackResult != ok)
 	{
 		return 20 + testStackResult;
+	}
+	const int testProcessOperationResult = testProcessOperation();
+	if (testProcessOperationResult != ok)
+	{
+		return 30 + testProcessOperationResult;
 	}
 	return ok;
 }
@@ -188,27 +207,31 @@ int main(void)
 	int errorCode = tests();
 	if (errorCode)
 	{
-		printf("ERROR %d\n", errorCode);
+		printf("ERROR IN %s, TEST CASE %d\n", TEST_ERRORS[errorCode / 10], errorCode % 10);
 		return errorCode;
 	}
-	int currentSize = 0;
+	size_t currentSize = 0;
 	char symbol = 0;
 	char* string = (char*)calloc(2, sizeof(char));
-	int stringSize = 2;
+	size_t stringSize = 2;
+	printf("Enter the string to calculate:\n");
 	while ((symbol = getchar()) != '\n')
 	{
 		if (strlen(string) + 3 >= stringSize)
 		{
 			stringSize *= 2;
-			string = realloc(string, sizeof(char) * stringSize);
-			if (string == NULL)
+			char* buffer = (char*)realloc(string, sizeof(char) * stringSize);
+			if (buffer == NULL)
 			{
-				return 1;
+				free(string);
+				return memoryError;
 			}
+			string = buffer;
 		}
 		if (strncat(string, &symbol, 1) == NULL)
 		{
-			printf("MEMORY ERROR");
+			printf("MEMORY ERROR\n");
+			free(string);
 			return memoryError;
 		}
 	}
@@ -216,9 +239,11 @@ int main(void)
 	int result = postfixCalculator(string, &errorCode);
 	if (errorCode)
 	{
-		printf("ERROR IN CALCULATION %d", errorCode);
+		printf("ERROR IN CALCULATION %d\n", errorCode);
+		free(string);
 		return errorCode;
 	}
-	printf("Result = %d", result);
-	return 0;
+	printf("Result = %d\n", result);
+	free(string);
+	return ok;
 }

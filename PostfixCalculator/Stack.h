@@ -6,6 +6,8 @@ enum ERRORCODES_STACK
 	stackMemoryError,
 	stackNullPointerError,
 };
+//объявление значения стэка
+typedef int StackValue;
 //объявление самого стэка
 typedef struct Stack Stack;
 //добавление в стэк элемента
