@@ -1,7 +1,7 @@
-#pragma once
+п»ї#pragma once
 
-//Быстрая сортировка
+//Р‘С‹СЃС‚СЂР°СЏ СЃРѕСЂС‚РёСЂРѕРІРєР°
 void quickSort(int* const array, const size_t leftBorder, const size_t rightBorder);
 
-//Сортировка вставками
+//РЎРѕСЂС‚РёСЂРѕРІРєР° РІСЃС‚Р°РІРєР°РјРё
 void insertionSort(int* const array, const size_t leftBorder, const size_t rightBorder);

@@ -1,4 +1,4 @@
-#include "sortings.h"
+﻿#include "sortings.h"
 #include <stdlib.h>
 
 enum ERRORCODES
