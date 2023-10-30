@@ -1,48 +1,48 @@
 #include "sortings.h"
+#include <stdlib.h>
 
-int myMax(int firstNumber, int secondNumber)
+enum ERRORCODES
 {
-    if (firstNumber >= secondNumber)
-    {
-        return firstNumber;
-    }
-    return secondNumber;
+    ok,
+    memoryError,
+};
+
+int myMax(const int firstNumber, const int secondNumber)
+{
+    return firstNumber > secondNumber ? firstNumber : secondNumber;
 }
 
-void swap(int* firstElement, int* secondElement)
+void swap(int* const firstElement, int* const secondElement)
 {
-    int thirdElement = *firstElement;
+    const int thirdElement = *firstElement;
     *firstElement = *secondElement;
     *secondElement = thirdElement;
 }
 
-int insertionSort(int array[], int leftBorder, int rightBorder)
+void insertionSort(int* const array, const size_t leftBorder, const size_t rightBorder)
 {
-    for (int i = leftBorder + 1; i < rightBorder; ++i)
+    for (size_t i = leftBorder + 1; i < rightBorder; ++i)
     {
-        int j = i;
-        while (array[j] < array[j - 1] && j - 1 >= leftBorder)
+        for (size_t j = i; j > leftBorder && array[j] < array[j - 1]; --j)
         {
             swap(&array[j], &array[j - 1]);
-            j--;
         }
     }
-    return 0;
 }
 
-int quickSort(int array[], int leftBorder, int rightBorder)
+void quickSort(int* const array, const size_t leftBorder, const size_t rightBorder)
 {
-    int splitElement = -1;
     if (rightBorder - leftBorder <= 1)
     {
-        return 0;
+        return;
     }
     if (rightBorder - leftBorder <= 10)
     {
         insertionSort(array, leftBorder, rightBorder);
-        return 0;
+        return;
     }
-    for (int i = leftBorder + 1; i < rightBorder; ++i)
+    int splitElement = -1;
+    for (size_t i = leftBorder + 1; i < rightBorder; ++i)
     {
         if (array[i - 1] != array[i])
         {
@@ -52,34 +52,23 @@ int quickSort(int array[], int leftBorder, int rightBorder)
     }
     if (splitElement == -1)
     {
-        return -1;
+        return;
     }
-    int firstElementBiggerThanSplit = leftBorder;
-    int lastElementBiggerThanSplt = rightBorder - 1;
-    while (firstElementBiggerThanSplit < lastElementBiggerThanSplt)
+    size_t leftIndex = leftBorder;
+    size_t rightIndex = rightBorder - 1;
+    while (leftIndex < rightIndex)
     {
-
-        while (array[firstElementBiggerThanSplit] < splitElement)
+        while (array[leftIndex] < splitElement && leftIndex != rightBorder - 1)
         {
-            firstElementBiggerThanSplit++;
-            if (firstElementBiggerThanSplit == rightBorder - 1)
-            {
-                break;
-            }
+            ++leftIndex;
         }
-        while (array[lastElementBiggerThanSplt] >= splitElement)
+        while (array[rightIndex] >= splitElement && rightIndex != leftBorder)
         {
-            lastElementBiggerThanSplt--;
-            if (lastElementBiggerThanSplt == leftBorder)
-            {
-                break;
-            }
+            --rightIndex;
         }
-        swap(&array[lastElementBiggerThanSplt], &array[firstElementBiggerThanSplit]);
+        swap(&array[rightIndex], &array[leftIndex]);
     }
-    swap(&array[firstElementBiggerThanSplit], &array[lastElementBiggerThanSplt]);
-    int splitIndex = firstElementBiggerThanSplit;
-    quickSort(array, leftBorder, splitIndex);
-    quickSort(array, splitIndex, rightBorder);
-    return 0;
+    swap(&array[leftIndex], &array[rightIndex]);
+    quickSort(array, leftBorder, leftIndex);
+    quickSort(array, leftIndex, rightBorder);
 }

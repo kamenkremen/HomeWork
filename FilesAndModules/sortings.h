@@ -1,7 +1,7 @@
 #pragma once
 
 //Быстрая сортировка
-int quickSort(int* array, int leftBorder, int rightBorder);
+void quickSort(int* const array, const size_t leftBorder, const size_t rightBorder);
 
 //Сортировка вставками
-int insertionSort(int array[], int leftBorder, int rightBorder);
+void insertionSort(int* const array, const size_t leftBorder, const size_t rightBorder);
