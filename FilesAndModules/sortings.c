@@ -7,12 +7,12 @@ enum ERRORCODES
     memoryError,
 };
 
-int myMax(const int firstNumber, const int secondNumber)
+static int myMax(const int firstNumber, const int secondNumber)
 {
     return firstNumber > secondNumber ? firstNumber : secondNumber;
 }
 
-void swap(int* const firstElement, int* const secondElement)
+static void swap(int* const firstElement, int* const secondElement)
 {
     const int thirdElement = *firstElement;
     *firstElement = *secondElement;
