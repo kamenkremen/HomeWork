@@ -11,11 +11,11 @@ typedef int StackValue;
 //объявление самого стэка
 typedef struct Stack Stack;
 //добавление в стэк элемента
-int push(Stack** stack, const int value);
+int push(Stack** stack, const StackValue value);
 //удаление верхнего элемента из стэка
 int pop(Stack** stack);
 //просмотр верхнего элемента стэка
-int top(Stack* stack, int* errorCode);
+StackValue top(Stack* stack, int* errorCode);
 //освобождение стэка
 int freeStack(Stack** stack);
 //проверка, пустой ли стэк
