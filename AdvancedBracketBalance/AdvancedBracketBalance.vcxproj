@@ -127,10 +127,12 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="AdvancedBracketBalance.c" />
+    <ClCompile Include="BracketBalance.c" />
+    <ClCompile Include="main.c" />
     <ClCompile Include="Stack.c" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="BracketBalance.h" />
     <ClInclude Include="Stack.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
