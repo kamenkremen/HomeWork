@@ -18,38 +18,47 @@ int testList(void)
 	}
 	if (addElement(list, 10) != ok)
 	{
+		deleteList(&list);
 		return 1;
 	}
 	if (deleteElement(list, 10) != ok)
 	{
+		deleteList(&list);
 		return 2;
 	}
 	if (!isEmpty(list))
 	{
+		deleteList(&list);
 		return 3;
 	}
 	if (addElement(list, 10) != ok)
 	{
+		deleteList(&list);
 		return 4;
 	}
 	if (addElement(list, 6) != ok)
 	{
+		deleteList(&list);
 		return 5;
 	}
 	if (addElement(list, 8) != ok)
 	{
+		deleteList(&list);
 		return 6;
 	}
 	if (top(list) != 6)
 	{
+		deleteList(&list);
 		return 7;
 	}
 	if (deleteElement(list, 6) != ok)
 	{
+		deleteList(&list);
 		return 8;
 	}
 	if (top(list) != 8)
 	{
+		deleteList(&list);
 		return 9;
 	}
 	deleteList(&list);
@@ -59,7 +68,6 @@ int testList(void)
 int tests(void)
 {
 	return testList();
-	
 }
 
 int main(void)
@@ -68,6 +76,7 @@ int main(void)
 	const int errorCode = tests();
 	if (errorCode != ok)
 	{
+		deleteList(&list);
 		printf("ERROR IN SORTED LIST TEST, CASE %d\n", errorCode);
 		return errorCode;
 	}

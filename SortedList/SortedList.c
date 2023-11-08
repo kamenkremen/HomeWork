@@ -19,7 +19,7 @@ SortedList* createList(void)
 	return calloc(1, sizeof(SortedList));
 }
 
-int addElement(SortedList* list, const listValue value)
+int addElement(SortedList* const list, const listValue value)
 {
 	ListElement* current = list->head;
 	ListElement* newElement = calloc(1, sizeof(ListElement));
@@ -48,7 +48,7 @@ int addElement(SortedList* list, const listValue value)
 	return listOk;
 }
 
-int deleteElement(SortedList* list, const listValue value)
+int deleteElement(SortedList* const list, const listValue value)
 {
 	ListElement* current = list->head;
 	ListElement* newElement = calloc(1, sizeof(ListElement));
@@ -74,7 +74,7 @@ int deleteElement(SortedList* list, const listValue value)
 	return listOk;
 }
 
-int printList(SortedList* list)
+int printList(const SortedList* const list)
 {
 	ListElement* current = list->head;
 	while (current != NULL)
@@ -86,7 +86,7 @@ int printList(SortedList* list)
 	return listOk;
 }
 
-void deleteList(SortedList** list)
+void deleteList(SortedList** const list)
 {
 	while ((*list)->head != NULL)
 	{
@@ -95,12 +95,12 @@ void deleteList(SortedList** list)
 	free(*list);
 }
 
-bool isEmpty(SortedList* list)
+bool isEmpty(const SortedList* const list)
 {
 	return (list->head == NULL);
 }
 
-listValue top(SortedList* list)
+listValue top(const SortedList* const list)
 {
 	if (list->head == NULL)
 	{
