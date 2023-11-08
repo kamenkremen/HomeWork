@@ -6,7 +6,7 @@
 #include <string.h>
 #include "ErrorCodes.h"
 
-List* merge(const List* const first, const List* const second, const bool sortByName, int* errorCode)
+static List* merge(const List* const first, const List* const second, const bool sortByName, int* errorCode)
 {
 	List* newList = createList();
 	if (newList == NULL)
@@ -108,13 +108,12 @@ List* merge(const List* const first, const List* const second, const bool sortBy
 	return newList;
 }
 
-void sort(ListOfLists* const list, const bool sortByName, int* mainErrorCode)
+static void sort(ListOfLists* const list, const bool sortByName, int* mainErrorCode)
 {
 	int errorCode = 0;
 	while (getSizeOfListOfLists(list) > 1)
 	{
 		List* firstList = getList(list, 0, &errorCode);
-		//printf("%d\n", getSize(list));
 		if (errorCode != ok)
 		{
 			*mainErrorCode = errorCode;
