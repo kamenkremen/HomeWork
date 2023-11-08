@@ -43,8 +43,10 @@ int readFile(List* const list, const FILE* const file)
 	{
 		if (symbol == '-')
 		{
+			string[currentSize] = '\0';
 			value->name = string;
 			string = (char*)calloc(2, sizeof(char));
+			currentSize = 0;
 			stringSize = 2;
 			if (string == NULL)
 			{
@@ -55,6 +57,7 @@ int readFile(List* const list, const FILE* const file)
 		}
 		if (symbol == '\n' || symbol == EOF)
 		{
+			string[currentSize] = '\0';
 			value->number = string;
 			if (addElement(list, *value) != ok)
 			{
@@ -69,6 +72,7 @@ int readFile(List* const list, const FILE* const file)
 				return memoryError;
 			}
 			string = (char*)calloc(2, sizeof(char));
+			currentSize = 0;
 			stringSize = 2;
 			if (string == NULL)
 			{
@@ -83,7 +87,7 @@ int readFile(List* const list, const FILE* const file)
 			}
 			continue;
 		}
-		if (strlen(string) + 3 >= stringSize)
+		if (currentSize + 3 >= stringSize)
 		{
 			stringSize *= 2;
 			char* buffer = (char*)realloc(string, sizeof(char) * stringSize);
@@ -95,13 +99,8 @@ int readFile(List* const list, const FILE* const file)
 			}
 			string = buffer;
 		}
-		if (strncat(string, &symbol, 1) == NULL)
-		{
-			printf("MEMORY ERROR\n");
-			free(string);
-			free(value);
-			return memoryError;
-		}
+		string[currentSize] = symbol;
+		++currentSize;
 	}
 	free(string);
 	free(value);
