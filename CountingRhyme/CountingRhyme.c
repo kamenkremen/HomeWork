@@ -58,7 +58,7 @@ int getSurvivedStartedPosition(const size_t n, const size_t m, int* errorCode)
 	{
 		return nullPointerError;
 	}
-	int result = top(list) + 1;
+	const int result = top(list) + 1;
 	deleteList(&list);
 	return result;
 }

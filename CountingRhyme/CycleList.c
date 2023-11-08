@@ -20,7 +20,7 @@ CycleList* createList(void)
 	return calloc(1, sizeof(CycleList));
 }
 
-int addElement(CycleList* list, const listValue value)
+int addElement(CycleList* const list, const listValue value)
 {
 	ListElement* current = list->head;
 	ListElement* newElement = calloc(1, sizeof(ListElement));
@@ -46,7 +46,7 @@ int addElement(CycleList* list, const listValue value)
 	return listOk;
 }
 
-int deleteElement(CycleList* list, const size_t index)
+int deleteElement(CycleList* const list, const size_t index)
 {
 	if (list->head == NULL)
 	{
@@ -84,7 +84,7 @@ int deleteElement(CycleList* list, const size_t index)
 	return listOk;
 }
 
-int printList(CycleList* list)
+int printList(const CycleList* const list)
 {
 	ListElement* current = list->head;
 	while (current->next != list->head)
@@ -96,7 +96,7 @@ int printList(CycleList* list)
 	return listOk;
 }
 
-void deleteList(CycleList** list)
+void deleteList(CycleList** const list)
 {
 	if (*list == NULL || (*list)->head == NULL)
 	{
@@ -109,12 +109,12 @@ void deleteList(CycleList** list)
 	free(*list);
 }
 
-bool isEmpty(CycleList* list)
+bool isEmpty(const CycleList* const list)
 {
 	return (list->head == NULL);
 }
 
-listValue top(CycleList* list)
+listValue top(const CycleList* const list)
 {
 	if (list->head == NULL)
 	{
@@ -123,12 +123,12 @@ listValue top(CycleList* list)
 	return list->head->value;
 }
 
-size_t getSize(CycleList* list)
+size_t getSize(const CycleList* const list)
 {
 	return list->size;
 }
 
-listValue get(CycleList* list, size_t index)
+listValue get(const CycleList* const list, size_t index)
 {
 	size_t currentIndex = 0;
 	ListElement* current = list->head;
