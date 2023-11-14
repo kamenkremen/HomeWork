@@ -19,7 +19,7 @@ enum ERRORCODES
     memoryError,
 };
 
-void fillArrayWithRandomNumbers(int* const array, const size_t sizeOfArray)
+static void fillArrayWithRandomNumbers(int* const array, const size_t sizeOfArray)
 {
     for (size_t i = sizeOfArray - 1; i != -1; --i)
     {
@@ -27,7 +27,7 @@ void fillArrayWithRandomNumbers(int* const array, const size_t sizeOfArray)
     }
 }
 
-bool isSorted(const int* const array, const size_t leftBorder, const size_t rightBorder)
+static bool isSorted(const int* const array, const size_t leftBorder, const size_t rightBorder)
 {
     for (size_t i = leftBorder + 1; i < rightBorder; ++i)
     {
@@ -39,7 +39,7 @@ bool isSorted(const int* const array, const size_t leftBorder, const size_t righ
     return true;
 }
 
-int testForIsSorted(void)
+static int testForIsSorted(void)
 {
     int testArray[ARRAY_SIZE] = { 0 };
     for (size_t i = 0; i < ARRAY_SIZE; ++i)
@@ -68,7 +68,7 @@ int testForIsSorted(void)
     return ok;
 }
 
-bool testForSwap(void)
+static bool testForSwap(void)
 {
     int first = rand();
     const int secondFirst = first;
@@ -78,7 +78,7 @@ bool testForSwap(void)
     return !(first == secondSecond && second == secondFirst);
 }
 
-int testForSort(void (*sort) (int* const, const size_t, const size_t))
+static int testForSort(void (*sort) (int* const, const size_t, const size_t))
 {
     const size_t arraySize = rand() % (ARRAY_SIZE - ARRAY_MIN_SIZE) + ARRAY_MIN_SIZE;
     int* testArray = (int*)calloc(arraySize, sizeof(int));
@@ -111,7 +111,7 @@ int testForSort(void (*sort) (int* const, const size_t, const size_t))
     return ok;
 }
 
-int findMostCommonElement(int* const array, const size_t arraySize)
+static int findMostCommonElement(int* const array, const size_t arraySize)
 {
     quickSort(array, 0, arraySize);
     int maximum = 1;
@@ -141,7 +141,7 @@ int findMostCommonElement(int* const array, const size_t arraySize)
     return mostCommonElement;
 }
 
-int testForFindMostCommonElement(void)
+static int testForFindMostCommonElement(void)
 {
     int array[TEST_ARRAY_SIZE] = { 0 };
     if (findMostCommonElement(array, TEST_ARRAY_SIZE) != 0)
@@ -168,7 +168,7 @@ int testForFindMostCommonElement(void)
     return ok;
 }
 
-int tests(void)
+static int tests(void)
 {
     int result = testForSort(insertionSort);
     if (result != ok)
