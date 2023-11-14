@@ -7,9 +7,9 @@ struct Stack
 	struct Stack* previous;
 };
 
-int push(Stack** head, const StackValue value)
+int push(Stack** const head, const StackValue value)
 {
-	Stack* next = malloc(sizeof(Stack));
+	Stack* next = (Stack*)malloc(sizeof(Stack));
 	if (next == NULL)
 	{
 		return stackMemoryError;
@@ -20,7 +20,7 @@ int push(Stack** head, const StackValue value)
 	return stackOk;
 }
 
-int pop(Stack** head)
+int pop(Stack** const head)
 {
 	if (isEmpty(*head))
 	{
@@ -32,7 +32,7 @@ int pop(Stack** head)
 	return stackOk;
 }
 
-StackValue top(Stack* head, int* errorCode)
+StackValue top(const Stack* const head, int* errorCode)
 {
 	if (isEmpty(head))
 	{
@@ -42,16 +42,15 @@ StackValue top(Stack* head, int* errorCode)
 	return head->value;
 }
 
-int freeStack(Stack** head)
+void freeStack(Stack** const head)
 {
 	while (!isEmpty(*head))
 	{
 		pop(head);
 	}
-	return stackOk;
 }
 
-int isEmpty(Stack* stack)
+bool isEmpty(const Stack* const stack)
 {
 	return stack == NULL;
 }
