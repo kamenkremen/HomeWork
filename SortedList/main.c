@@ -11,9 +11,9 @@ int finish(SortedList** list, const int errorCode)
 
 enum OPERATIONS
 {
-	exit,
+	exitOperation,
 	add,
-	remove,
+	delete,
 	print,
 };
 
@@ -33,43 +33,42 @@ int main(void)
 	}
 	while (true)
 	{
-		printf("Enter number of the operation:\n0 - exit\n1 - add element to the\
-		list\n2 - delete element from the list\n3 - print list\n");
+		printf("Enter number of the operation:\n0 - exit\n1 - add element to the list\
+\n2 - delete element from the list\n3 - print list\n");
 		const int operation = 0;
 		if (scanf_s("%d", &operation) != 1)
 		{
 			printf("INPUT ERROR\n");
 			return finish(&list, inputError);
 		}
+		int value = 0;
+		int errorCode = 0;
 		switch (operation)
 		{
-			case exit:
-				deleteList(&list);
-				break;
+			case exitOperation:
+				return finish(&list, ok);
 			case add:
 				printf("Enter value to add:\n");
-				const int value = 0;
 				if (scanf_s("%d", &value) != 1)
 				{
 					printf("INPUT ERROR\n");
 					return finish(&list, inputError);
 				}
-				int errorCode = addElement(&list, value);
+				errorCode = addElement(&list, value);
 				if (errorCode != ok)
 				{
 					printf("MEMORY ERROR\n");
 					return finish(&list, memoryError);
 				}
 				break;
-			case remove:
+			case delete:
 				printf("Enter value to remove:\n");
-				const int value = 0;
 				if (scanf_s("%d", &value) != 1)
 				{
 					printf("INPUT ERROR\n");
 					return finish(&list, inputError);
 				}
-				int errorCode = deleteElement(&list, value);
+				errorCode = deleteElement(&list, value);
 				if (errorCode != ok)
 				{
 					if (errorCode == listNoSuchElement)
