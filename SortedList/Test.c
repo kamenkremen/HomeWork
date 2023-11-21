@@ -12,6 +12,10 @@ int test(void)
 	{
 		return memoryError;
 	}
+	if (!deleteElement(list, 128745))
+	{
+		return 10;
+	}
 	if (addElement(list, 10) != ok)
 	{
 		deleteList(&list);
