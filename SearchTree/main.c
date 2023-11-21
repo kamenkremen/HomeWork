@@ -12,7 +12,16 @@ char* ERRORNAMES[5] = {
 	"Input error",
 };
 
-int finish(Tree** tree, int errorCode)
+enum OPERATIONS
+{
+	exitOperation,
+	addOperation,
+	getOperation,
+	containOperation,
+	deleteOperation,
+};
+
+int finish(Tree** const tree, const int errorCode)
 {
 	printf("%s\n", ERRORNAMES[errorCode]);
 	deleteTree(tree);
@@ -21,7 +30,7 @@ int finish(Tree** tree, int errorCode)
 
 int main(void)
 {
-	bool* failedCases = test();
+	const bool* const failedCases = test();
 	bool isFailed = false;
 	for (size_t i = 0; i < NUMBER_OF_TESTS; ++i)
 	{
@@ -59,9 +68,9 @@ int main(void)
 		int errorCode = ok;
 		switch (operation)
 		{
-			case 0:
+			case exitOperation:
 				return finish(&tree, 0);
-			case 1:
+			case addOperation:
 				printf("Enter the key and the value\n");
 				char* value = "";
 				if (scanf_s("%d", &key) != 1)
@@ -93,14 +102,14 @@ int main(void)
 				}
 				printf("Element added\n");
 				break;
-			case 2:
+			case getOperation:
 				printf("Enter the key\n");
 				if (scanf_s("%d", &key) != 1)
 				{
 					return finish(&tree, inputError);
 				}
 				errorCode = ok;
-				char* outputValue = get(tree, key, &errorCode);
+				const char* outputValue = get(tree, key, &errorCode);
 				if (errorCode != ok)
 				{
 					return finish(&tree, errorCode);
@@ -112,21 +121,21 @@ int main(void)
 				}
 				printf("Value : %s\n", outputValue);
 				break;
-			case 3:
+			case containOperation:
 				printf("Enter the key\n");
 				if (scanf_s("%d", &key) != 1)
 				{
 					return finish(&tree, inputError);
 				}
 				errorCode = ok;
-				bool containing = contains(tree, key, &errorCode);
+				const bool containing = contains(tree, key, &errorCode);
 				if (errorCode != ok)
 				{
 					return finish(&tree, errorCode);
 				}
 				printf("%s\n", containing ? "This key in dictionary" : "This key is not in dictionary");
 				break;
-			case 4:
+			case deleteOperation:
 				printf("Enter the key\n");
 				if (scanf_s("%d", &key) != 1)
 				{

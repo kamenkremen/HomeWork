@@ -26,7 +26,7 @@ static TreeElement* getNeededChild(const TreeElement* const element, const int k
 	return (element == NULL ? NULL : (key > element->key ? element->rightChild : element->leftChild));
 }
 
-static TreeElement* getParent(const Tree* const tree, const int key, int* errorCode)
+static TreeElement* getParent(const Tree* const tree, const int key, int* const errorCode)
 {
 	if (tree == NULL)
 	{
@@ -78,7 +78,7 @@ int add(Tree* const tree, const int key, const char* value)
 	return ok;
 }
 
-char* get(const Tree* const tree, const int key, int* errorCode)
+char* get(const Tree* const tree, const int key, int* const errorCode)
 {
 	TreeElement* parent = getParent(tree, key, errorCode);
 	if (*errorCode != ok)
@@ -152,12 +152,12 @@ int delete(Tree* const tree, const int key)
 	return ok;
 }
 
-bool contains(const Tree* const tree, const int key, int* errorCode)
+bool contains(const Tree* const tree, const int key, int* const errorCode)
 {
 	return get(tree, key, errorCode) != NULL;
 }
 
-static void deleteNodes(TreeElement** node)
+static void deleteNodes(TreeElement** const node)
 {
 	if ((*node)->rightChild != NULL)
 	{
@@ -170,7 +170,7 @@ static void deleteNodes(TreeElement** node)
 	free(*node);
 }
 
-void deleteTree(Tree** tree)
+void deleteTree(Tree** const tree)
 {
 	if ((*tree)->root != NULL)
 	{ 
