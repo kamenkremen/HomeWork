@@ -1,151 +1,88 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include "SortedList.h"
+#include "Test.h"
 
-enum ERRORCODES
+int finish(SortedList** list, const int errorCode)
 {
-	ok,
-	memoryError,
-	inputError,
+	deleteList(list);
+	return errorCode;
+}
+
+enum OPERATIONS
+{
+	exit,
+	add,
+	remove,
+	print,
 };
-
-int testList(void)
-{
-	SortedList* list = createList();
-	if (list == NULL)
-	{
-		return memoryError;
-	}
-	if (addElement(list, 10) != ok)
-	{
-		deleteList(&list);
-		return 1;
-	}
-	if (deleteElement(list, 10) != ok)
-	{
-		deleteList(&list);
-		return 2;
-	}
-	if (!isEmpty(list))
-	{
-		deleteList(&list);
-		return 3;
-	}
-	if (addElement(list, 10) != ok)
-	{
-		deleteList(&list);
-		return 4;
-	}
-	if (addElement(list, 6) != ok)
-	{
-		deleteList(&list);
-		return 5;
-	}
-	if (addElement(list, 8) != ok)
-	{
-		deleteList(&list);
-		return 6;
-	}
-	if (top(list) != 6)
-	{
-		deleteList(&list);
-		return 7;
-	}
-	if (deleteElement(list, 6) != ok)
-	{
-		deleteList(&list);
-		return 8;
-	}
-	if (top(list) != 8)
-	{
-		deleteList(&list);
-		return 9;
-	}
-	deleteList(&list);
-	return ok;
-}
-
-int tests(void)
-{
-	return testList();
-}
 
 int main(void)
 {
-	SortedList* list = createList();
-	const int errorCode = tests();
+	const int errorCode = test();
 	if (errorCode != ok)
 	{
-		deleteList(&list);
 		printf("ERROR IN SORTED LIST TEST, CASE %d\n", errorCode);
 		return errorCode;
 	}
+	SortedList* list = createList();
 	if (list == NULL)
 	{
 		printf("MEMORY ERROR\n");
 		return memoryError;
 	}
-	while (1)
+	while (true)
 	{
-		printf("Enter number of the operation:\n0 - exit\n1 - add element to the list\n2 - delete element from the list\n3 - print list\n");
+		printf("Enter number of the operation:\n0 - exit\n1 - add element to the\
+		list\n2 - delete element from the list\n3 - print list\n");
 		const int operation = 0;
 		if (scanf_s("%d", &operation) != 1)
 		{
 			printf("INPUT ERROR\n");
-			deleteList(&list);
-			return inputError;
+			return finish(&list, inputError);
 		}
-		if (operation == 0)
+		switch (operation)
 		{
-			deleteList(&list);
-			break;
-		}
-		if (operation == 1)
-		{
-			printf("Enter value to add:\n");
-			const int value = 0;
-			if (scanf_s("%d", &value) != 1)
-			{
-				printf("INPUT ERROR\n");
+			case exit:
 				deleteList(&list);
-				return inputError;
-			}
-			int errorCode = addElement(&list, value);
-			if (errorCode != ok)
-			{
-				printf("MEMORY ERROR\n");
-				deleteList(&list);
-				return memoryError;
-			}
-			continue;
-		}
-		if (operation == 2)
-		{
-			printf("Enter value to remove:\n");
-			const int value = 0;
-			if (scanf_s("%d", &value) != 1)
-			{
-				printf("INPUT ERROR\n");
-				deleteList(&list);
-				return inputError;
-			}
-			int errorCode = deleteElement(&list, value);
-			if (errorCode != ok)
-			{
-				if (errorCode == listNoSuchElement)
+				break;
+			case add:
+				printf("Enter value to add:\n");
+				const int value = 0;
+				if (scanf_s("%d", &value) != 1)
 				{
-					printf("No element has been removed\n");
-					continue;
+					printf("INPUT ERROR\n");
+					return finish(&list, inputError);
 				}
-				printf("ERROR %s\n", errorCode);
-				deleteList(&list);
-				return errorCode;
-			}
-			continue;
-		}
-		if (operation == 3)
-		{
-			printList(list);
+				int errorCode = addElement(&list, value);
+				if (errorCode != ok)
+				{
+					printf("MEMORY ERROR\n");
+					return finish(&list, memoryError);
+				}
+				break;
+			case remove:
+				printf("Enter value to remove:\n");
+				const int value = 0;
+				if (scanf_s("%d", &value) != 1)
+				{
+					printf("INPUT ERROR\n");
+					return finish(&list, inputError);
+				}
+				int errorCode = deleteElement(&list, value);
+				if (errorCode != ok)
+				{
+					if (errorCode == listNoSuchElement)
+					{
+						printf("No element has been removed\n");
+						continue;
+					}
+					printf("ERROR %d\n", errorCode);
+					return finish(&list, errorCode);
+				}
+				break;
+			case print:
+				printList(list);
 		}
 	}
 	return ok;

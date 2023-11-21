@@ -39,27 +39,26 @@ int addElement(SortedList* const list, const listValue value)
 		newElement->next = current;
 		return listOk;
 	}
-	while (current->next != NULL && current->next->value < value)
-	{
-		current = current->next;
-	}
+	for (; current->next != NULL && current->next->value < value; current = current->next);
 	newElement->next = current->next;
 	current->next = newElement;
 	return listOk;
 }
 
-int deleteElement(SortedList* const list, const listValue value)
+bool deleteElement(SortedList* const list, const listValue value)
 {
-	ListElement* current = list->head;
-	ListElement* newElement = calloc(1, sizeof(ListElement));
-	ListElement* previous = NULL;
-	while (current->value != value)
+	if (list->head == NULL)
 	{
-		previous = current;
-		current = current->next;
+		return true;
+	}
+
+	ListElement* current = list->head;
+	ListElement* previous = NULL;
+	for (; current->value != value; previous = current, current = current->next)
+	{
 		if (current == NULL)
 		{
-			return listNoSuchElement;
+			return true;
 		}
 	}
 	if (previous != NULL)
@@ -71,16 +70,15 @@ int deleteElement(SortedList* const list, const listValue value)
 		list->head = current->next;
 	}
 	free(current);
-	return listOk;
+	return false;
 }
 
 int printList(const SortedList* const list)
 {
 	ListElement* current = list->head;
-	while (current != NULL)
+	for (; current != NULL; current = current->next)
 	{
 		printf("%d ", current->value);
-		current = current->next;
 	}
 	printf("\n");
 	return listOk;
@@ -100,10 +98,11 @@ bool isEmpty(const SortedList* const list)
 	return (list->head == NULL);
 }
 
-listValue top(const SortedList* const list)
+listValue top(const SortedList* const list, int* const errorCode)
 {
 	if (list->head == NULL)
 	{
+		*errorCode = listNullPointerError;
 		return listNullPointerError;
 	}
 	return list->head->value;
