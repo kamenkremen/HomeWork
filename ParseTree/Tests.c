@@ -19,6 +19,11 @@ static int testFileReading(void)
     {
         return 2;
     }
+    char* test3 = read("test3.txt");
+    if (strcmp(test3, "") != 0)
+    {
+        return 3;
+    }
     return ok;
 }
 
@@ -36,7 +41,7 @@ static int testParseTree(void)
         return 2;
     }
     deleteParseTree(&tree1);
-    ParseTree* tree2 = build(read("test.txt"));
+    ParseTree* tree2 = build(read("test2.txt"));
     if (tree2 == NULL)
     {
         return 3;

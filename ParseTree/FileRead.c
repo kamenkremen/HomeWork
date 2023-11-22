@@ -19,10 +19,9 @@ char* read(const char* const fileName)
         fclose(file);
         return NULL;
     }
-    char symbol = 0;
+    char symbol = getc(file);
     while (symbol != "\n" && symbol != EOF)
     {
-        symbol = getc(file);
         if (length >= capacity)
         {
             capacity *= 2;
@@ -35,6 +34,7 @@ char* read(const char* const fileName)
         }
         string[length] = symbol;
         ++length;
+        symbol = getc(file);
     }
     fclose(file);
     if (length >= capacity)

@@ -47,6 +47,6 @@ int main(void)
         printf("NULL POINTER ERROR\n");
         return finish(&tree, errorCode);
     }
-    printf("%d", result);
+    printf("Result of the expression: %d\n", result);
     return finish(&tree, ok);
 }

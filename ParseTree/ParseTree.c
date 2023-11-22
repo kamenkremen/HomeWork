@@ -70,16 +70,6 @@ ParseTree* build(const char* const expression)
     {
         return NULL;
     }
-    char* newExpression = (char*)calloc(strlen(expression) - 2, sizeof(char));
-    if (newExpression == NULL)
-    {
-        free(tree);
-        return NULL;
-    }
-    for (size_t i = 1; i < strlen(expression) - 1; ++i)
-    {
-        newExpression[i - 1] = expression[i];
-    }
     size_t index = 0;
     tree->root = createNode(expression, &index);
     return tree;
