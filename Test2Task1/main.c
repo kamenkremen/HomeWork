@@ -3,6 +3,12 @@
 
 #include "List.h"
 
+char* TEST_ERRORCODES[3] = {
+    "",
+    "LIST TEST",
+    "DELETE ODD INDEXES TEST",
+};
+
 int deleteOddIndexes(List* list)
 {
     if (list == NULL)
@@ -147,7 +153,7 @@ int main(void)
     int errorCode = tests();
     if (errorCode != ok)
     {
-        printf("ERROR IN TEST CASE %d\n", errorCode);
+        printf("ERROR IN TEST %s, CASE %d\n", TEST_ERRORCODES[errorCode / 10], errorCode % 10);
         return errorCode;
     }
     printf("NO ERRORS!\n");
