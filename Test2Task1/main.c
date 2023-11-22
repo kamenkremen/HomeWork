@@ -9,7 +9,7 @@ char* TEST_ERRORCODES[3] = {
     "DELETE ODD INDEXES TEST",
 };
 
-int deleteOddIndexes(List* list)
+void deleteOddIndexes(List* list)
 {
     if (list == NULL)
     {
@@ -18,7 +18,7 @@ int deleteOddIndexes(List* list)
     Position* current = getStartPosition(list);
     if (current == NULL)
     {
-        return memoryError;
+        return;
     }
     int errorCode = ok;
     while (current != NULL)
@@ -30,7 +30,7 @@ int deleteOddIndexes(List* list)
             {
                 break;
             }
-            return errorCode;
+            return;
         }
         errorCode = nextPosition(&current);
         if (errorCode != ok && errorCode != noSuchElement)
@@ -39,10 +39,9 @@ int deleteOddIndexes(List* list)
             {
                 break;
             }
-            return errorCode;
+            return;
         }
     }
-    return ok;
 }
 
 int listTest(void)
@@ -109,25 +108,17 @@ int deleteOddIndexesTest(void)
     addElement(list, 3);
     addElement(list, 4);
     addElement(list, 5);
-    int errorCode = deleteOddIndexes(list);
-    if (errorCode != ok)
-    {
-        deleteList(&list);
-        return 1;
-    }
+    int errorCode = ok;
+    deleteOddIndexes(list);
     errorCode = ok;
     if (getValueByIndex(list, 0, &errorCode) != 1 || errorCode != ok || getValueByIndex(list, 1, &errorCode) != 3 || errorCode != ok || getValueByIndex(list, 2, &errorCode) != 5 || errorCode != ok) {
         deleteList(&list);
         return 2;
     }
-    if (deleteOddIndexes(list) != ok)
-    {
-        deleteList(&list);
-        return 3;
-    }
+    deleteOddIndexes(list);
     if (getValueByIndex(list, 0, &errorCode) != 1 || errorCode != ok && getValueByIndex(list, 1, &errorCode) != 5 || errorCode != ok) {
         deleteList(&list);
-        return 4;
+        return 3;
     }
     deleteList(&list);
     return ok;
