@@ -1,4 +1,4 @@
-#pragma once
+п»ї#pragma once
 
-// сама функция постфиксного калькулятора
+// СЃР°РјР° С„СѓРЅРєС†РёСЏ РїРѕСЃС‚С„РёРєСЃРЅРѕРіРѕ РєР°Р»СЊРєСѓР»СЏС‚РѕСЂР°
 int postfixCalculator(const char* const string, int* errorCode);
