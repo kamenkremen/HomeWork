@@ -129,11 +129,16 @@
   <ItemGroup>
     <ClCompile Include="main.c" />
     <ClCompile Include="PostfixCalculator.c" />
+    <ClCompile Include="ReadFile.c" />
     <ClCompile Include="Stack.c" />
+    <ClCompile Include="Tests.c" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="ErrorCodes.h" />
     <ClInclude Include="PostfixCalculator.h" />
+    <ClInclude Include="ReadFile.h" />
     <ClInclude Include="Stack.h" />
+    <ClInclude Include="Tests.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

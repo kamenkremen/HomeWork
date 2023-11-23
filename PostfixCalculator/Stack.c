@@ -3,54 +3,54 @@
 
 struct Stack
 {
-	StackValue value;
-	struct Stack* previous;
+    StackValue value;
+    struct Stack* previous;
 };
 
 int push(Stack** const head, const StackValue value)
 {
-	Stack* next = (Stack*)malloc(sizeof(Stack));
-	if (next == NULL)
-	{
-		return stackMemoryError;
-	}
-	next->value = value;
-	next->previous = *head;
-	*head = next;
-	return stackOk;
+    Stack* next = (Stack*)malloc(sizeof(Stack));
+    if (next == NULL)
+    {
+        return stackMemoryError;
+    }
+    next->value = value;
+    next->previous = *head;
+    *head = next;
+    return stackOk;
 }
 
 int pop(Stack** const head)
 {
-	if (isEmpty(*head))
-	{
-		return stackNullPointerError;
-	}
-	Stack* trash = *head;
-	*head = (*head)->previous;
-	free(trash);
-	return stackOk;
+    if (isEmpty(*head))
+    {
+        return stackNullPointerError;
+    }
+    Stack* trash = *head;
+    *head = (*head)->previous;
+    free(trash);
+    return stackOk;
 }
 
-StackValue top(const Stack* const head, int* errorCode)
+StackValue top(const Stack* const head, int* const errorCode)
 {
-	if (isEmpty(head))
-	{
-		*errorCode = stackNullPointerError;
-		return stackNullPointerError;
-	}
-	return head->value;
+    if (isEmpty(head))
+    {
+        *errorCode = stackNullPointerError;
+        return 0;
+    }
+    return head->value;
 }
 
 void freeStack(Stack** const head)
 {
-	while (!isEmpty(*head))
-	{
-		pop(head);
-	}
+    while (!isEmpty(*head))
+    {
+        pop(head);
+    }
 }
 
 bool isEmpty(const Stack* const stack)
 {
-	return stack == NULL;
+    return stack == NULL;
 }
