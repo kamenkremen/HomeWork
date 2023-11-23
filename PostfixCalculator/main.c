@@ -6,7 +6,7 @@
 #include "Stack.h"
 #include "Tests.h"
 #include "ErrorCodes.h"
-#include "ReadFile.h"
+#include "Strings.h"
 
 char* ERRORNAMES[6] =
 {
@@ -27,7 +27,7 @@ int main(void)
     }
     printf("Enter the string to calculate:\n");
     errorCode = 0;
-    char* string = read(&errorCode);
+    char* string = readLine(&errorCode);
     if (errorCode != ok)
     {
         printf("%s\n", ERRORNAMES[errorCode]);

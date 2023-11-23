@@ -1,10 +1,10 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#include "ReadFile.h"
+#include "Strings.h"
 #include "ErrorCodes.h"
 
-char* read(int* const errorCode)
+char* readLine(int* const errorCode)
 {
     char symbol = 0;
     char* string = (char*)calloc(1, sizeof(char));
@@ -17,24 +17,6 @@ char* read(int* const errorCode)
     size_t amountOfNumbers = 0;
     while ((symbol = getchar()) != '\n')
     {
-        if (symbol == ' ')
-        {
-            continue;
-        }
-        if ((int)(symbol - '0') < 0 || (int)(symbol - '0') > 9)
-        {
-            if (symbol != '/' && symbol != '*' && symbol != '+' && symbol != '-' || amountOfNumbers < 2)
-            {
-                free(string);
-                *errorCode = inputError;
-                return NULL;
-            }
-            --amountOfNumbers;
-        }
-        else
-        {
-            ++amountOfNumbers;
-        }
         if (length >= capacity)
         {
             capacity *= 2;
@@ -59,6 +41,5 @@ char* read(int* const errorCode)
         }
     }
     string[length] = '\0';
-
     return string;
 }

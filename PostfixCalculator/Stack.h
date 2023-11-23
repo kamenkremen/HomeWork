@@ -3,9 +3,9 @@
 //коды ошибок для стэка
 enum ERRORCODES_STACK
 {
-	stackOk,
-	stackMemoryError,
-	stackNullPointerError,
+    stackOk,
+    stackMemoryError,
+    stackNullPointerError,
 };
 //объявление значения стэка
 typedef int StackValue;
