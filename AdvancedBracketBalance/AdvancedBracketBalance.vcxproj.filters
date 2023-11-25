@@ -24,12 +24,27 @@
     <ClCompile Include="BracketBalance.c">
       <Filter>Исходные файлы</Filter>
     </ClCompile>
+    <ClCompile Include="Strings.c">
+      <Filter>Исходные файлы</Filter>
+    </ClCompile>
+    <ClCompile Include="Tests.c">
+      <Filter>Исходные файлы</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Stack.h">
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
     <ClInclude Include="BracketBalance.h">
+      <Filter>Файлы заголовков</Filter>
+    </ClInclude>
+    <ClInclude Include="Strings.h">
+      <Filter>Файлы заголовков</Filter>
+    </ClInclude>
+    <ClInclude Include="ErrorCodes.h">
+      <Filter>Файлы заголовков</Filter>
+    </ClInclude>
+    <ClInclude Include="Tests.h">
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
   </ItemGroup>

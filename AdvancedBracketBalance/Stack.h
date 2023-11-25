@@ -1,22 +1,23 @@
-#pragma once
-//коды ошибок для стэка
+п»ї#pragma once
+#include <stdbool.h>
+//РєРѕРґС‹ РѕС€РёР±РѕРє РґР»СЏ СЃС‚СЌРєР°
 enum ERRORCODES_STACK
 {
-	stackOk,
-	stackMemoryError,
-	stackNullPointerError,
+    stackOk,
+    stackMemoryError,
+    stackNullPointerError,
 };
-//объявление значения стэка
+//РѕР±СЉСЏРІР»РµРЅРёРµ Р·РЅР°С‡РµРЅРёСЏ СЃС‚СЌРєР°
 typedef char StackValue;
-//объявление самого стэка
+//РѕР±СЉСЏРІР»РµРЅРёРµ СЃР°РјРѕРіРѕ СЃС‚СЌРєР°
 typedef struct Stack Stack;
-//добавление в стэк элемента
+//РґРѕР±Р°РІР»РµРЅРёРµ РІ СЃС‚СЌРє СЌР»РµРјРµРЅС‚Р°
 int push(Stack** stack, const StackValue value);
-//удаление верхнего элемента из стэка
+//СѓРґР°Р»РµРЅРёРµ РІРµСЂС…РЅРµРіРѕ СЌР»РµРјРµРЅС‚Р° РёР· СЃС‚СЌРєР°
 int pop(Stack** stack);
-//просмотр верхнего элемента стэка
+//РїСЂРѕСЃРјРѕС‚СЂ РІРµСЂС…РЅРµРіРѕ СЌР»РµРјРµРЅС‚Р° СЃС‚СЌРєР°
 StackValue top(Stack* stack, int* errorCode);
-//освобождение стэка
-int freeStack(Stack** stack);
-//проверка, пустой ли стэк
-int isEmpty(Stack* stack);
+//РѕСЃРІРѕР±РѕР¶РґРµРЅРёРµ СЃС‚СЌРєР°
+void freeStack(Stack** stack);
+//РїСЂРѕРІРµСЂРєР°, РїСѓСЃС‚РѕР№ Р»Рё СЃС‚СЌРє
+bool isEmpty(Stack* stack);

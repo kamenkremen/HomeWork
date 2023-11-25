@@ -130,10 +130,15 @@
     <ClCompile Include="BracketBalance.c" />
     <ClCompile Include="main.c" />
     <ClCompile Include="Stack.c" />
+    <ClCompile Include="Strings.c" />
+    <ClCompile Include="Tests.c" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="BracketBalance.h" />
+    <ClInclude Include="ErrorCodes.h" />
     <ClInclude Include="Stack.h" />
+    <ClInclude Include="Strings.h" />
+    <ClInclude Include="Tests.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
