@@ -193,10 +193,12 @@ static void updateHeightToNode(Node* const start, Node* const end)
 {
     if (start == end)
     {
+        start = balance(start);
         updateHeight(start);
         return;
     }
     updateHeightToNode(start->leftChild, end);
+    start = balance(start);
     updateHeight(start);
 }
 
