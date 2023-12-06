@@ -1,8 +1,8 @@
 #pragma once
 enum ERRORCODES
 {
-	ok,
-	memoryError,
-	inputError,
+    ok,
+    memoryError,
+    inputError,
 };
 int test(void);

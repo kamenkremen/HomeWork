@@ -1,18 +1,20 @@
 #pragma once
 #include <stdbool.h>
-enum ERRORCODES_FOR_LIST
+enum ErrorCodesForList
 {
-	listOk,
-	listMemoryError,
-	listNoSuchElement,
-	listNullPointerError,
+    listOk,
+    listMemoryError,
+    listNoSuchElement,
+    listNullPointerError,
 };
+
+typedef int errorCodeForList;
 typedef int listValue;
 typedef struct SortedList SortedList;
 SortedList* createList(void);
-int addElement(SortedList* const list, const listValue value);
+errorCodeForList addElement(SortedList* const list, const listValue value);
 bool deleteElement(SortedList* const list, const listValue value);
-int printList(const SortedList* const list);
+errorCodeForList printList(const SortedList* const list);
 void deleteList(SortedList** const list);
 listValue top(const SortedList* const list, int* const errorCode);
-bool isEmpty(SortedList* list);
+bool isEmpty(const SortedList* const list);
