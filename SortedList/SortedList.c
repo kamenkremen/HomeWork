@@ -16,7 +16,7 @@ struct SortedList
 
 SortedList* createList(void)
 {
-    return calloc(1, sizeof(SortedList));
+    return (SortedList*)calloc(1, sizeof(SortedList));
 }
 
 errorCodeForList addElement(SortedList* const list, const listValue value)
