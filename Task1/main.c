@@ -14,6 +14,7 @@ int tests(void)
     }
     if (getVortexes(graph) != 6)
     {
+        free(graph);
         return 2;
     }
     int errorCode = ok;
@@ -21,17 +22,21 @@ int tests(void)
     getAdjacentVortexes(graph, 0, &errorCode, adjacent);
     if (errorCode != ok || adjacent[5] != true || adjacent[1] != true)
     {
+        free(graph);
         return 3;
     }
     size_t used[6] = { 0 };
     if (dfs(graph, 0, used, 1) != ok)
     {
+        free(graph);
         return 4;
     }
     if (used[1] != 1 || used[5] != 1)
     {
+        free(graph);
         return 5;
     }
+    free(graph);
     return ok;
 }
 
@@ -106,5 +111,7 @@ int main(void)
         }
         printf("\n");
     }
+    free(graph);
+    free(used);
     return 0;
 }
