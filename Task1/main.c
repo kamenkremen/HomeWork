@@ -7,17 +7,17 @@
 
 int tests(void)
 {
+    int errorCode = ok;
     Graph* graph = createGraph();
     if (graph == NULL)
     {
         return 1;
     }
-    if (getVortexes(graph) != 6)
+    if (getVortexes(graph, &errorCode) != 6 || errorCode != ok)
     {
         free(graph);
         return 2;
     }
-    int errorCode = ok;
     bool adjacent[6] = { false };
     getAdjacentVortexes(graph, 0, &errorCode, adjacent);
     if (errorCode != ok || adjacent[5] != true || adjacent[1] != true)
@@ -44,8 +44,12 @@ static int dfs(const Graph* const graph, const size_t vortex, size_t* used, size
 {
     used[vortex] = component;
     int errorCode = ok;
-    size_t size = getVortexes(graph);
+    size_t size = getVortexes(graph, &errorCode);
     bool* adjacent = (bool*)calloc(size, sizeof(bool));
+    if (adjacent == NULL)
+    {
+        return memoryError;
+    }
     getAdjacentVortexes(graph, vortex, &errorCode, adjacent);
     if (errorCode != ok)
     {
@@ -59,11 +63,13 @@ static int dfs(const Graph* const graph, const size_t vortex, size_t* used, size
             {
                 if (dfs(graph, i, used, component) != ok)
                 {
+                    free(adjacent);
                     return memoryError;
                 }
             }
         }
     }
+    free(adjacent);
     return ok;
 }
 
@@ -76,7 +82,13 @@ int main(void)
         return errorCode;
     }
     Graph* graph = createGraph();
-    size_t amountOfVortexes = getVortexes(graph);
+    size_t amountOfVortexes = getVortexes(graph, &errorCode);
+    if (errorCode != ok)
+    {
+        free(graph);
+        printf("NULL POINTER ERROR\n");
+        return errorCode;
+    }
     size_t* used = (size_t*)calloc(amountOfVortexes, sizeof(size_t));
     if (used == NULL)
     {

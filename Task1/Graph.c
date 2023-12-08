@@ -14,6 +14,11 @@ struct Graph
 
 void getAdjacentVortexes(Graph* const graph, const size_t const vortex, int* const errorCode, bool* adjacent)
 {
+    if (graph == NULL || adjacent == NULL)
+    {
+        *errorCode = nullPointerError;
+        return;
+    }
     for (size_t i = 0; i < graph->edges; ++i)
     {
         if (graph->matrix[vortex][i] == true)
@@ -49,7 +54,12 @@ Graph* createGraph(void)
     return graph;
 }
 
-size_t getVortexes(const Graph* const graph)
+size_t getVortexes(const Graph* const graph, int* const errorCode)
 {
+    if (graph == NULL)
+    {
+        *errorCode = nullPointerError;
+        return nullPointerError;
+    }
     return graph->vortexes;
 }
