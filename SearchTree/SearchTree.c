@@ -1,5 +1,6 @@
 ﻿#include <stdlib.h>
 #include <stdio.h>
+#include <string.h>
 
 #include "SearchTree.h"
 
@@ -53,21 +54,46 @@ int add(Tree* const tree, const int key, const char* value)
 	{
 		return nullPointerError;
 	}
+	TreeElement* current = tree->root;
 	TreeElement* newElement = (TreeElement*)calloc(1, sizeof(TreeElement));
 	if (newElement == NULL)
 	{
 		return memoryError;
 	}
-	newElement->key = key;
-	newElement->value = value;
-	TreeElement* current = tree->root;
+	newElement->key = (char*)calloc(strlen(key), sizeof(char));
+	if (newElement->key) {
+		free(newElement);
+		return memoryError;
+	}
+	newElement->value = (char*)calloc(strlen(value), sizeof(char));
+	if (newElement->value == NULL)
+	{
+		free(newElement->value);
+		free(newElement);
+		return memoryError;
+	}
+	strcpy_s(newElement->value, strlen(value), value);
+	strcpy_s(newElement->key, strlen(key), key);
 	if (current == NULL)
 	{
 		tree->root = newElement;
 		return ok;
 	}
 	for (; getNeededChild(current, key) != NULL; current = getNeededChild(current, key));
-	if (key >= current->key)
+	if (key == current->key)
+	{
+		current->value = (char*)calloc(strlen(value), sizeof(char));
+		if (current->value == NULL) {
+			free(newElement->key);
+			free(newElement->value);
+			free(newElement);
+			return memoryError;
+		}
+		strcpy_s(current->value, strlen(value), value);
+		return ok;
+	}
+	
+	if (key > current->key)
 	{
 		current->rightChild = newElement;
 	}
@@ -89,8 +115,9 @@ char* get(const Tree* const tree, const int key, int* const errorCode)
 		}
 		return NULL;
 	}
+	TreeElement* child = getNeededChild(parent, key);
 	return (parent == NULL) ? (tree->root->value) : 
-		(getNeededChild(parent, key) == NULL || getNeededChild(parent, key)->key != key ? NULL : getNeededChild(parent, key)->value);
+		(child == NULL || child->key != key ? NULL : child->value);
 }
 
 static void setChild(Tree* const tree, TreeElement* const parent, const int key, const TreeElement* const newChild)
