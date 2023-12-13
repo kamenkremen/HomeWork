@@ -117,7 +117,7 @@ QueueValue dequeue(PriorityQueue* const queue, QueueErrorCode* const errorCode)
     if (queue->size == 0)
     {
         *errorCode = indexOutOfRangeError;
-        return indexOutOfRangeError;
+        return -1;
     }
     QueueElement* maximum = queue->heap[0];
     queue->heap[0] = queue->heap[queue->size - 1];
