@@ -16,7 +16,11 @@ int test(void)
     size_t* result = solve(graph, &size, &errorCode);
     if (size != 2 || result[0] != 0 || result[1] != 2)
     {
+        deleteGraph(&graph);
+        free(result);
         return 2;
     }
+    deleteGraph(&graph);
+    free(result);
     return ok;
 }

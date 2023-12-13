@@ -75,3 +75,18 @@ size_t* getAdjacentVortexes(const Graph* const graph, const size_t vortex, size_
     *size = current;
     return result;
 }
+
+
+void deleteGraph(Graph** const graph)
+{
+    if (graph == NULL || *graph == NULL)
+    {
+        return;
+    }
+    for (size_t i = 0; i < (*graph)->amountOfVortexes; ++i)
+    {
+        free((*graph)->vortexes[i]);
+    }
+    free((*graph)->vortexes);
+    free(*graph);
+}
