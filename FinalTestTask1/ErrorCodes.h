@@ -4,5 +4,4 @@ enum ErrorCodes
     ok,
     memoryError,
     inputError,
-
 };
