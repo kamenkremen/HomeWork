@@ -1,4 +1,5 @@
 #include <stdlib.h>
+#include <stdio.h>
 
 #include "PriorityQueue.h"
 #include"ErrorCodes.h"
@@ -16,7 +17,12 @@ static int priorityQueueTest(void)
     {
         return 1;
     }
-    int errorCode = enqueue(queue, 4, 1);
+    int errorCode = ok;
+    if (dequeue(queue, &errorCode) != -1 || errorCode != indexOutOfRangeError)
+    {
+        return finish(&queue, 12);
+    }
+    errorCode = enqueue(queue, 4, 1);
     if (errorCode != ok)
     {
         return finish(&queue, 2);
