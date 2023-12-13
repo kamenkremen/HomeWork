@@ -8,6 +8,14 @@
 #include "Tests.h"
 #include "DijkstraSolve.h"
 
+static int finish(Graph** const graph, size_t** const used, size_t** const capitals, const int returnValue)
+{
+    deleteGraph(graph);
+    free(*used);
+    free(*capitals);
+    return returnValue;
+}
+
 static int parseTest(void)
 {
     size_t n = 0;
@@ -62,22 +70,14 @@ static int solveTest(void)
     errorCode = solve(n, m, k, graph, capitals, used);
     if (errorCode != ok)
     {
-        free(used);
-        deleteGraph(&graph);
-        free(capitals);
-        return 4;
+        return finish(&graph, &used, &capitals, 4);
     }
     if (used[0] != 1 || used[1] != 2 || used[2] != 1 || used[3] != 2)
     {
-        free(used);
-        deleteGraph(&graph);
-        free(capitals);
-        return 5;
+        return finish(&graph, &used, &capitals, 5);
     }
-    free(used);
-    deleteGraph(&graph);
-    free(capitals);
-    return ok;
+
+    return finish(&graph, &used, &capitals, ok);
 }
 
 int tests(void)

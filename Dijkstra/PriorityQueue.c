@@ -107,7 +107,7 @@ QueueErrorCode insert(PriorityQueue* const queue, const QueueValue value, const 
     return ok;
 }
 
-QueueValue pop(PriorityQueue* const queue, int* const priority, QueueErrorCode* const errorCode)
+QueueValue pop(PriorityQueue* const queue, QueuePriority* const priority, QueueErrorCode* const errorCode)
 {
     if (queue == NULL)
     {
@@ -124,7 +124,9 @@ QueueValue pop(PriorityQueue* const queue, int* const priority, QueueErrorCode* 
     *errorCode = siftDown(queue, 0);
     --queue->size;
     *priority = minimum->priority;
-    return minimum->value;
+    QueueValue value = minimum->value;
+    free(minimum);
+    return value;
 }
 
 size_t getSize(const PriorityQueue* const queue)
@@ -141,6 +143,12 @@ void deleteQueue(PriorityQueue** const queue)
     if (queue == NULL)
     {
         return;
+    }
+    while ((*queue)->size != 0)
+    {
+        QueuePriority priority = 0;
+        QueueErrorCode errorCode = ok;
+        pop(queue, &priority, &errorCode);
     }
     free((*queue)->heap);
     free(*queue);

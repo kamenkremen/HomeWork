@@ -9,14 +9,14 @@ typedef int QueuePriority;
 
 // type of error codes that queue returns
 typedef int QueueErrorCode;
-
+// priority queue
 typedef struct PriorityQueue PriorityQueue;
 
 // insert element in the queue
 QueueErrorCode insert(PriorityQueue* const queue, const QueueValue value, const QueuePriority priority);
 
 // returns element with the lowest priority and deletes it
-QueueValue pop(PriorityQueue* const queue, int* const priority, QueueErrorCode* const errorCode);
+QueueValue pop(PriorityQueue* const queue, QueuePriority* const priority, QueueErrorCode* const errorCode);
 
 // returns new priority queue
 PriorityQueue* createPriorityQueue(void);

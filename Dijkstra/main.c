@@ -38,9 +38,10 @@ int main(void)
         printf("ERROR IN SOLVING\n");
         return errorCode;
     }
+    printf("Cities that belongs to:\n");
     for (size_t i = 0; i < k; ++i)
     {
-        printf("%zu: ", i + 1);
+        printf("%zu state: ", i + 1);
         for (size_t j = 0; j < n; ++j)
         {
             if (used[j] == i + 1)
