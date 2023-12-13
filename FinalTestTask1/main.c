@@ -3,7 +3,7 @@
 
 #include "ErrorCodes.h"
 
-int solve(int number)
+size_t solve(size_t number)
 {
     int digits[10] = { 0 };
     while (number > 0)
@@ -12,7 +12,7 @@ int solve(int number)
         number /= 10;
         ++digits[digit];
     }
-    int result = 0;
+    size_t result = 0;
     for (size_t i = 0; i < 10; ++i)
     {
         for (size_t j = 0; j < digits[i]; ++j)
@@ -60,7 +60,12 @@ int main(void)
         printf("INPUT ERROR\n");
         return inputError;
     }
-    int result = solve(number);
-    printf("Result: %d\n", result);
+    if (number <= 0)
+    {
+        printf("INPUT ERROR\n");
+        return inputError;
+    }
+    size_t result = solve((size_t)number);
+    printf("Result: %zu\n", result);
     return 0;
 }
