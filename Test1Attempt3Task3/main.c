@@ -29,6 +29,7 @@ char* readFile(const char* const fileName)
             string = (char*)realloc(string, capacity);
             if (string == NULL)
             {
+                fclose(file);
                 return NULL;
             }
         }
@@ -45,11 +46,19 @@ char* readFile(const char* const fileName)
         string = (char*)realloc(string, capacity);
         if (string == NULL)
         {
+            fclose(file);
             return NULL;
         }
     }
     string[length] = '\0';
+    fclose(file);
     return string;
+}
+
+int finish(const char* const result, const int returnValue)
+{
+    free(result);
+    return returnValue;
 }
 
 int tests(void)
@@ -57,34 +66,33 @@ int tests(void)
     char* result = readFile("test1.txt");
     if (result == NULL || strcmp(result, "afgba") != 0)
     {
-        free(result);
-        return 1;
+        return finish(result, 1);
     }
+    free(result);
     result = readFile("test2.txt");
     if (result == NULL || strcmp(result, "afg\tgba\na") != 0)
     {
-        free(result);
-        return 2;
+        return finish(result, 2);
     }
+    free(result);
     result = readFile("test3.txt");
     if (result == NULL || strcmp(result, "") != 0)
     {
-        free(result);
-        return 3;
+        return finish(result, 3);
     }
+    free(result);
     result = readFile("test4.txt");
     if (result == NULL || strcmp(result, "programirovanie lublu ochen\n") != 0)
     {
-        free(result);
-        return 4;
+        return finish(result, 4);
     }
-    free(result);
-    return 0;
+    return finish(result, 0);
 }
 
 int main(void)
 {
-    int errorCode = tests();
+
+    const int errorCode = tests();
     if (errorCode != 0)
     {
         printf("ERROR IN TEST %d\n", errorCode);
@@ -93,11 +101,9 @@ int main(void)
     const char* const result = readFile(FILE_NAME);
     if (result == NULL)
     {
-        free(result);
         printf("Error in file reading\n");
-        return 1;
+        return finish(result, 1);
     }
     printf("Result: %s", result);
-    free(result);
-    return  0;
+    return finish(result, 0);
 }
