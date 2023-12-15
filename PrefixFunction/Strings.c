@@ -11,22 +11,23 @@ static int* prefixFunction(const char* const string, const char* const subString
     {
         return NULL;
     }
-    size_t length = strlen(string);
+    const size_t length = strlen(string);
     size_t* pi = (size_t*)calloc(strlen(string), sizeof(size_t));
     if (pi == NULL)
     {
         return NULL;
     }
-    for (size_t i = 1; i < length; ++i)
+    const size_t subStringSize = strlen(subString);
+    for (size_t i = 0; i < length; ++i)
     {
-        size_t current = pi[i - 1];
+        size_t current = (i == 0 ? 0 : pi[i - 1]);
         while (string[i] != subString[current] && current >= 1)
         {
-            current = pi[current - 1];
+            current = (pi[current - 1]) % (subStringSize);
         }
         if (string[i] == subString[current])
         {
-            pi[i] = current + 1;
+            pi[i] = (current + 1);
         }
     }
     return pi;
@@ -45,13 +46,13 @@ int findSubString(const char* const string, const char* const subString, int* co
         *errorCode = memoryError;
         return memoryError;
     }
-    size_t size = strlen(string);
-    size_t subStringSize = strlen(subString);
+    const size_t size = strlen(string);
+    const size_t subStringSize = strlen(subString);
     for (size_t i = 0; i < size; ++i)
     {
         if (pi[i] == subStringSize)
         {
-            return i - subStringSize;
+            return i - subStringSize + 1;
         }
     }
     return -1;

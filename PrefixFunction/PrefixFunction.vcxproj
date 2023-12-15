@@ -22,11 +22,13 @@
     <ClCompile Include="Files.c" />
     <ClCompile Include="main.c" />
     <ClCompile Include="Strings.c" />
+    <ClCompile Include="Tests.c" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="ErrorCodes.h" />
     <ClInclude Include="Files.h" />
     <ClInclude Include="Strings.h" />
+    <ClInclude Include="Tests.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>17.0</VCProjectVersion>

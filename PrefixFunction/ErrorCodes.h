@@ -1,7 +1,10 @@
 #pragma once
-enum errorCodes
+
+enum ErrorCodes
 {
     ok,
     memoryError,
     nullPointerError,
+    inputError,
+    fileError,
 };
