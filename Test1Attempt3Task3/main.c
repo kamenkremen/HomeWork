@@ -91,7 +91,6 @@ int tests(void)
 
 int main(void)
 {
-
     const int errorCode = tests();
     if (errorCode != 0)
     {
