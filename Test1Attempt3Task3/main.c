@@ -2,6 +2,8 @@
 #include <stdio.h>
 #include <string.h>
 
+#define FILE_NAME "input.txt"
+
 char* readFile(const char* const fileName)
 {
     FILE* file = NULL;
@@ -88,7 +90,7 @@ int main(void)
         printf("ERROR IN TEST %d\n", errorCode);
         return errorCode;
     }
-    const char* const result = readFile("input.txt");
+    const char* const result = readFile(FILE_NAME);
     if (result == NULL)
     {
         free(result);
