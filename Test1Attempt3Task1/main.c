@@ -19,6 +19,17 @@ enum ErrorCodes
     nullPointerError,
 };
 
+int finish(const bool* const first, const bool* const second, const int returnValue, int* const errorCode, const bool isError)
+{
+    if (isError)
+    {
+        *errorCode = returnValue;
+    }
+    free(first);
+    free(second);
+    return returnValue;
+}
+
 int greater(const bool* const firstNumber, const bool* const secondNumber, const size_t firstSize, const size_t secondSize, int* const errorCode)
 {
     if (firstNumber == NULL || secondNumber == NULL)
@@ -30,15 +41,13 @@ int greater(const bool* const firstNumber, const bool* const secondNumber, const
     bool* newFirstNumber = (bool*)calloc(maxSize, sizeof(bool));
     if (newFirstNumber == NULL)
     {
-        *errorCode = memoryError;
-        return memoryError;
+        return finish(NULL, NULL, memoryError, errorCode, true);
     }
     bool* newSecondNumber = (bool*)calloc(maxSize, sizeof(bool));
     if (newSecondNumber == NULL)
     {
-        *errorCode = memoryError;
-        free(newFirstNumber);
-        return memoryError;
+
+        return finish(newFirstNumber, NULL, memoryError, errorCode, true);
     }
     for (size_t i = 0; i < firstSize; ++i)
     {
@@ -52,20 +61,14 @@ int greater(const bool* const firstNumber, const bool* const secondNumber, const
     {
         if (newFirstNumber[i] && !newSecondNumber[i])
         {
-            free(newFirstNumber);
-            free(newSecondNumber);
-            return first;
+            return finish(newFirstNumber, newSecondNumber, first, errorCode, false);
         }
         if (!newFirstNumber[i] && newSecondNumber[i])
         {
-            free(newFirstNumber);
-            free(newSecondNumber);
-            return second;
+            return finish(newFirstNumber, newSecondNumber, second, errorCode, false);
         }
     }
-    free(newFirstNumber);
-    free(newSecondNumber);
-    return equal;
+    return finish(newFirstNumber, newSecondNumber, equal, errorCode, false);
 }
 
 int tests(void)
@@ -113,6 +116,11 @@ int main(void)
     const bool secondNumber[SECOND_SIZE] = { true, true, false, true, true, true, true };
     errorCode = ok;
     int result = greater(firstNumber, secondNumber, FIRST_SIZE, SECOND_SIZE, &errorCode);
+    if (errorCode != ok)
+    {
+        printf("ERROR %d\n", errorCode);
+        return errorCode;
+    }
     if (result == first)
     {
         printf("First number is greater than second.\n");
