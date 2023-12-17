@@ -31,11 +31,11 @@ CycleList* createList(void)
 bool addElement(CycleList* const list, const listValue value)
 {
     ListElement* newElement = calloc(1, sizeof(ListElement));
-    newElement->value = value;
     if (newElement == NULL)
     {
         return true;
     }
+    newElement->value = value;
     if (list->head == NULL)
     {
         newElement->next = newElement;
@@ -49,7 +49,7 @@ bool addElement(CycleList* const list, const listValue value)
     newElement->previous = current;
     current->next = newElement;
     list->head->previous = newElement;
-    ++(list->size);
+    ++list->size;
     return false;
 }
 
@@ -110,16 +110,18 @@ bool deleteElement(CycleList* const list, const Position* const position)
 
 void deleteList(CycleList** const list)
 {
-    if (list == NULL || *list == NULL || (*list)->head == NULL)
+    if (list == NULL || *list == NULL)
     {
         return;
     }
-    ListElement* current = (*list)->head;
-    while ((*list)->size > 0)
+    if ((*list)->size != 0)
     {
-        Position* position = getStartPosition(*list);
-        deleteElement(*list, position);
-        deletePosition(&position);
+        ListElement* current = (*list)->head->next;
+        for (; current != (*list)->head; current = current->next)
+        {
+            free(current->previous);
+        }
+        free((*list)->head);
     }
     free(*list);
 }
