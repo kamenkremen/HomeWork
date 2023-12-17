@@ -1,142 +1,140 @@
-#include "CycleList.h"
 #include <stdlib.h>
 #include <stdbool.h>
 
+#include "CycleList.h"
+#include "ErrorCodes.h"
+
 typedef struct ListElement
 {
-	struct ListElement* next;
-	listValue value;
+    struct ListElement* next;
+    struct ListElement* previous;
+    listValue value;
 
 } ListElement;
 
 struct CycleList
 {
-	ListElement* head;
-	size_t size;
+    ListElement* head;
+    size_t size;
+};
+
+struct Position
+{
+    ListElement* element;
 };
 
 CycleList* createList(void)
 {
-	return calloc(1, sizeof(CycleList));
+    return calloc(1, sizeof(CycleList));
 }
 
-int addElement(CycleList* const list, const listValue value)
+bool addElement(CycleList* const list, const listValue value)
 {
-	ListElement* current = list->head;
-	ListElement* newElement = calloc(1, sizeof(ListElement));
-	newElement->value = value;
-	if (newElement == NULL)
-	{
-		return listMemoryError;
-	}
-	if (current == NULL)
-	{
-		newElement->next = newElement;
-		list->head = newElement;
-		++list->size;
-		return listOk;
-	}
-	while (current->next != list->head)
-	{
-		current = current->next;
-	}
-	newElement->next = list->head;
-	current->next = newElement;
-	++(list->size);
-	return listOk;
+    ListElement* newElement = calloc(1, sizeof(ListElement));
+    newElement->value = value;
+    if (newElement == NULL)
+    {
+        return true;
+    }
+    if (list->head == NULL)
+    {
+        newElement->next = newElement;
+        newElement->previous = newElement;
+        list->head = newElement;
+        ++list->size;
+        return false;
+    }
+    ListElement* current = list->head->previous;
+    newElement->next = list->head;
+    newElement->previous = current;
+    current->next = newElement;
+    list->head->previous = newElement;
+    ++(list->size);
+    return false;
 }
 
-int deleteElement(CycleList* const list, const size_t index)
+Position* getStartPosition(const CycleList* const list)
 {
-	if (list->head == NULL)
-	{
-		return listNullPointerError;
-	}
-	ListElement* current = list->head;
-	ListElement* previous = NULL;
-	for (size_t currentIndex = 1; currentIndex < index; ++currentIndex)
-	{
-		previous = current;
-		current = current->next;
-	}
-	if (current == list->head)
-	{
-		ListElement* lastElement = current;
-		while (lastElement->next != current)
-		{
-			lastElement = lastElement->next;
-		}
-		if (current == lastElement)
-		{
-			free(current);
-			list->size = 0;
-			return listOk;
-		}
-		lastElement->next = current->next;
-		free(current);
-		list->head = lastElement->next;
-		--list->size;
-		return listOk;
-	}
-	previous->next = current->next;
-	free(current);
-	--list->size;
-	return listOk;
+    if (list == NULL)
+    {
+        return NULL;
+    }
+    Position* position = (Position*)calloc(1, sizeof(Position));
+    if (position == NULL)
+    {
+        return NULL;
+    }
+    position->element = list->head;
+    return position;
 }
 
-int printList(const CycleList* const list)
+bool movePostionForward(Position* const position)
 {
-	ListElement* current = list->head;
-	while (current->next != list->head)
-	{
-		printf("%d ", current->value);
-		current = current->next;
-	}
-	printf("%d\n", current->value);
-	return listOk;
+    if (position == NULL || position->element == NULL)
+    {
+        return true;
+    }
+    position->element = position->element->next;
+    return false;
+}
+
+void deletePosition(Position** const position)
+{
+    if (position == NULL)
+    {
+        return;
+    }
+    free(*position);
+}
+
+bool deleteElement(CycleList* const list, const Position* const position)
+{
+    if (list->head == NULL || position == NULL)
+    {
+        return true;
+    }
+    if (list->size == 1)
+    {
+        free(list->head);
+        --list->size;
+        return false;
+    }
+    ListElement* element = position->element;
+    element->previous->next = element->next;
+    element->next->previous = element->previous;
+    list->head = element->next;
+    --list->size;
+    free(element);
+    return false;
 }
 
 void deleteList(CycleList** const list)
 {
-	if (*list == NULL || (*list)->head == NULL)
-	{
-		return;
-	}
-	while ((*list)->size != 0)
-	{
-		deleteElement(*list, 1);
-	}
-	free(*list);
+    if (list == NULL || *list == NULL || (*list)->head == NULL)
+    {
+        return;
+    }
+    ListElement* current = (*list)->head;
+    while ((*list)->size > 0)
+    {
+        Position* position = getStartPosition(*list);
+        deleteElement(*list, position);
+        deletePosition(&position);
+    }
+    free(*list);
 }
 
-bool isEmpty(const CycleList* const list)
+listValue top(const CycleList* const list, int* const errorCode)
 {
-	return (list->head == NULL);
-}
-
-listValue top(const CycleList* const list)
-{
-	if (list->head == NULL)
-	{
-		return listNullPointerError;
-	}
-	return list->head->value;
+    if (list->head == NULL)
+    {
+        *errorCode = nullPointerError;
+        return 1;
+    }
+    return list->head->value;
 }
 
 size_t getSize(const CycleList* const list)
 {
-	return list->size;
-}
-
-listValue get(const CycleList* const list, size_t index)
-{
-	size_t currentIndex = 0;
-	ListElement* current = list->head;
-	index %= getSize(list);
-	while (currentIndex != index)
-	{
-		current = current->next;
-		++currentIndex;
-	}
-	return current->value;
+    return list->size;
 }

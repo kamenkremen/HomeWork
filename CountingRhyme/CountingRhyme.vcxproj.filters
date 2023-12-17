@@ -21,9 +21,24 @@
     <ClCompile Include="CycleList.c">
       <Filter>Исходные файлы</Filter>
     </ClCompile>
+    <ClCompile Include="Tests.c">
+      <Filter>Исходные файлы</Filter>
+    </ClCompile>
+    <ClCompile Include="Solve.c">
+      <Filter>Исходные файлы</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="CycleList.h">
+      <Filter>Файлы заголовков</Filter>
+    </ClInclude>
+    <ClInclude Include="Tests.h">
+      <Filter>Файлы заголовков</Filter>
+    </ClInclude>
+    <ClInclude Include="Solve.h">
+      <Filter>Файлы заголовков</Filter>
+    </ClInclude>
+    <ClInclude Include="ErrorCodes.h">
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
   </ItemGroup>

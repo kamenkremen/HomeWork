@@ -129,9 +129,14 @@
   <ItemGroup>
     <ClCompile Include="CountingRhyme.c" />
     <ClCompile Include="CycleList.c" />
+    <ClCompile Include="Solve.c" />
+    <ClCompile Include="Tests.c" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="CycleList.h" />
+    <ClInclude Include="ErrorCodes.h" />
+    <ClInclude Include="Solve.h" />
+    <ClInclude Include="Tests.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
