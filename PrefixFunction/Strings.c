@@ -23,11 +23,11 @@ static int* prefixFunction(const char* const string, const char* const subString
         size_t current = (i == 0 ? 0 : pi[i - 1]);
         while (string[i] != subString[current] && current >= 1)
         {
-            current = (pi[current - 1]) % (subStringSize);
+            current = pi[current - 1] % subStringSize;
         }
         if (string[i] == subString[current])
         {
-            pi[i] = (current + 1);
+            pi[i] = current + 1;
         }
     }
     return pi;
@@ -55,7 +55,7 @@ int findSubString(const char* const string, const char* const subString, int* co
             return i - subStringSize + 1;
         }
     }
-    return -1;
+    return NOT_FOUND;
 }
 
 
@@ -71,26 +71,19 @@ char* readLine(void)
     size_t length = 0;
     while ((symbol = getchar()) != '\n')
     {
-        if (length >= capacity)
+        if (length + 1 >= capacity)
         {
             capacity *= 2;
-            string = (char*)realloc(string, capacity);
-            if (string == NULL)
+            char* buffer = (char*)realloc(string, capacity);
+            if (buffer == NULL)
             {
+                free(string);
                 return NULL;
             }
+            string = buffer;
         }
         string[length] = symbol;
         ++length;
-    }
-    if (length >= capacity)
-    {
-        ++capacity;
-        string = (char*)realloc(string, capacity);
-        if (string == NULL)
-        {
-            return NULL;
-        }
     }
     string[length] = '\0';
     return string;

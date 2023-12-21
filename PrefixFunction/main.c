@@ -7,6 +7,8 @@
 #include "ErrorCodes.h"
 #include "Tests.h"
 
+#define FAILED_TEST 1;
+
 static int finish(const char* const subString, const char* const fileName, const char* const file, const int returnValue)
 {
     free(subString);
@@ -19,7 +21,7 @@ int main(void)
 {
     if (test())
     {
-        return 1;
+        return FAILED_TEST;
     }
     int errorCode = ok;
     printf("Enter the substring:\n");

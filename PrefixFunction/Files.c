@@ -28,6 +28,7 @@ char* readFile(const char* const fileName)
             string = (char*)realloc(string, capacity);
             if (string == NULL)
             {
+                fclose(file);
                 return NULL;
             }
         }
@@ -40,9 +41,11 @@ char* readFile(const char* const fileName)
         string = (char*)realloc(string, capacity);
         if (string == NULL)
         {
+            fclose(file);
             return NULL;
         }
     }
     string[length] = '\0';
+    fclose(file);
     return string;
 }

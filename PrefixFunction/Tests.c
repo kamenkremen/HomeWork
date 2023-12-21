@@ -13,38 +13,36 @@ static int finish(const char* const result, const int returnValue)
     return returnValue;
 }
 
+static bool fileTestCase(const char* const fileName, const char* const neededResult)
+{
+    char* result = readFile(fileName);
+    if (result == NULL)
+    {
+        return true;
+    }
+    if (strcmp(result, neededResult) != 0)
+    {
+        return (bool)finish(result, 1);
+    }
+    free(result);
+    return false;
+}
+
 static int fileTest(void)
 {
-    char* result = readFile("test1.txt");
-    if (result == NULL)
+    if (fileTestCase("test1.txt", "test1"))
     {
         return 1;
     }
-    if (strcmp(result, "test1") != 0)
+    if (fileTestCase("test2.txt", ""))
     {
-        return finish(result, 2);
+        return 2;
     }
-    free(result);
-    result = readFile("test2.txt");
-    if (result == NULL)
+    if (fileTestCase("test3.txt", "t\te\nst 3"))
     {
-        return 3;
+        return 2;
     }
-    if (strcmp(result, "") != 0)
-    {
-        return finish(result, 4);
-    }
-    free(result);
-    result = readFile("test3.txt");
-    if (result == NULL)
-    {
-        return 5;
-    }
-    if (strcmp(result, "t\te\nst 3") != 0)
-    {
-        return finish(result, 6);
-    }
-    return finish(result, ok);
+    return ok;
 }
 
 static int findSubStringTest(void)
