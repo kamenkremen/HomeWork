@@ -16,7 +16,8 @@ enum Types
 
 enum States
 {
-    firstDigits,
+    firstDigit,
+    secondDigits,
     afterDot,
     afterDotAndDigit,
     afterE,
@@ -68,12 +69,23 @@ bool isNumber(const char* const string)
     }
     size_t index = 0;
     char symbol = string[index];
-    int state = firstDigits;
+    int state = firstDigit;
     while (1)
     {
         switch (state)
         {
-        case firstDigits:
+        case firstDigit:
+            switch(symbolType(symbol))
+            {
+            case digit:
+                state = secondDigits;
+                nextSymbol(string, &symbol, &index);
+                break;
+            default:
+                return false;
+            }
+            break;
+        case secondDigits:
             switch(symbolType(symbol))
             {
             case digit:

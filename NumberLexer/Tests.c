@@ -5,55 +5,14 @@
 
 static int testLexer(void)
 {
-    const char* const test1 = "1234";
-    if (!isNumber(test1))
+    const char* const testStrings[11] = { "1234", "1234.2", "1234.2E", "1234.E", "1234E", "1234E+5", "1234.2E7", "1234.2+5", "1234.5E+6", "1234.5E-6", ""};
+    const bool* const testValues[11] = { true, true, false, false, false, true, false, false, true, true, false };
+    for (size_t i = 0; i < 11; ++i)
     {
-        return 1;
-    }
-    const char* const test2 = "1234.2";
-    if (!isNumber(test2))
-    {
-        return 2;
-    }
-    const char* const test3 = "1234.2E";
-    if (isNumber(test3))
-    {
-        return 3;
-    }
-    const char* const test4 = "1234.E";
-    if (isNumber(test4))
-    {
-        return 4;
-    }
-    const char* const test5 = "1234E";
-    if (isNumber(test5))
-    {
-        return 5;
-    }
-    const char* const test6 = "1234E+5";
-    if (!isNumber(test6))
-    {
-        return 6;
-    }
-    const char* const test7 = "1234.2E7";
-    if (isNumber(test7))
-    {
-        return 7;
-    }
-    const char* const test8 = "1234.2+5";
-    if (isNumber(test8))
-    {
-        return 8;
-    }
-    const char* const test9 = "1234.5E+6";
-    if (!isNumber(test9))
-    {
-        return 9;
-    }
-    const char* const test10 = "1234.5E-6";
-    if (!isNumber(test10))
-    {
-        return 10;
+        if (isNumber(testStrings[i]) != testValues[i])
+        {
+            return i + 1;
+        }
     }
     return 0;
 }
