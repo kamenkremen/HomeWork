@@ -1,4 +1,5 @@
 #pragma once
+
 #include <stdlib.h>
 
 // type of value contained in queue
@@ -9,6 +10,7 @@ typedef int QueuePriority;
 
 // type of error codes that queue returns
 typedef int QueueErrorCode;
+
 // priority queue
 typedef struct PriorityQueue PriorityQueue;
 

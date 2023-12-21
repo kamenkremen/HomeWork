@@ -17,7 +17,7 @@ struct PriorityQueue
     size_t capacity;
 };
 
-static void swap(QueueElement** first, QueueElement** second)
+static void swap(QueueElement** const first, QueueElement** const second)
 {
     QueueElement* third = *first;
     *first = *second;
@@ -85,14 +85,16 @@ QueueErrorCode insert(PriorityQueue* const queue, const QueueValue value, const 
     {
         return nullPointerError;
     }
-    if (queue->capacity <= queue->size)
+    if (queue->capacity < queue->size)
     {
         queue->capacity *= 2;
-        queue->heap = (QueueElement**)realloc(queue->heap, queue->capacity * sizeof(QueueElement));
+        QueueElement** buffer = (QueueElement**)realloc(queue->heap, queue->capacity * sizeof(QueueElement));
         if (queue->heap == NULL)
         {
+            deleteQueue(&queue);
             return memoryError;
         }
+        queue->heap = buffer;
     }
     QueueElement* newElement = (QueueElement*)calloc(1, sizeof(QueueElement));
     if (newElement == NULL)
@@ -112,12 +114,12 @@ QueueValue pop(PriorityQueue* const queue, QueuePriority* const priority, QueueE
     if (queue == NULL)
     {
         *errorCode = nullPointerError;
-        return nullPointerError;
+        return NULL;
     }
     if (queue->size == 0)
     {
         *errorCode = indexOutOfRangeError;
-        return indexOutOfRangeError;
+        return NULL;
     }
     QueueElement* minimum = queue->heap[0];
     queue->heap[0] = queue->heap[queue->size - 1];

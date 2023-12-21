@@ -22,12 +22,8 @@ static int parseTest(void)
     size_t m = 0;
     size_t k = 0;
     int errorCode = ok;
-    Graph* graph = createGraph();
-    if (graph == NULL)
-    {
-        return 1;
-    }
-    size_t* capitals = parseFile("test1.txt", &n, &m, &k, graph, &errorCode);
+    Graph* graph = NULL;
+    size_t* capitals = parseFile("test1.txt", &n, &m, &k, &graph, &errorCode);
     if (errorCode != ok)
     {
         deleteGraph(&graph);
@@ -49,15 +45,10 @@ static int solveTest(void)
     size_t m = 0;
     size_t k = 0;
     int errorCode = ok;
-    Graph* graph = createGraph();
-    if (graph == NULL)
-    {
-        return 1;
-    }
-    size_t* capitals = parseFile("test2.txt", &n, &m, &k, graph, &errorCode);
+    Graph* graph = NULL;
+    size_t* capitals = parseFile("test2.txt", &n, &m, &k, &graph, &errorCode);
     if (errorCode != ok)
     {
-        deleteGraph(&graph);
         return 2;
     }
     size_t* used = (size_t*)calloc(n, sizeof(size_t));

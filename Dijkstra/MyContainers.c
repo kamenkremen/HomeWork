@@ -43,7 +43,7 @@ PairValueType getFirst(const Pair* const pair, Error* const errorCode)
     if (pair == NULL)
     {
         *errorCode = nullPointerError;
-        return nullPointerError;
+        return NULL;
     }
     return pair->first;
 }
@@ -53,22 +53,22 @@ PairValueType getSecond(const Pair* const pair, Error* const errorCode)
     if (pair == NULL)
     {
         *errorCode = nullPointerError;
-        return nullPointerError;
+        return NULL;
     }
     return pair->second;
 }
 
-VectorValueType getElement(const Vector* const vector, const size_t index, Error* errorCode)
+VectorValueType getElement(const Vector* const vector, const size_t index, Error* const errorCode)
 {
     if (vector == NULL)
     {
         *errorCode = nullPointerError;
-        return nullPointerError;
+        return NULL;
     }
     if (vector->size <= index)
     {
         *errorCode = indexOutOfRangeError;
-        return indexOutOfRangeError;
+        return NULL;
     }
     return vector->elements[index];
 }
@@ -80,14 +80,16 @@ Error addElement(Vector* const vector, const VectorValueType element)
         return nullPointerError;
     }
     ++vector->size;
-    if (vector->capacity <= vector->size)
+    if (vector->capacity < vector->size)
     {
         vector->capacity *= 2;
-        vector->elements = (VectorValueType*)realloc(vector->elements, vector->capacity * sizeof(VectorValueType));
-        if (vector->elements == NULL)
+        VectorValueType* buffer = (VectorValueType*)realloc(vector->elements, vector->capacity * sizeof(VectorValueType));
+        if (buffer == NULL)
         {
+            deleteVector(&vector);
             return memoryError;
         }
+        vector->elements = buffer;
     }
     vector->elements[vector->size - 1] = element;
     return ok;
@@ -132,6 +134,7 @@ Error setFirst(Pair* const pair, const PairValueType first)
         return nullPointerError;
     }
     pair->first = first;
+    return ok;
 }
 
 Error setSecond(Pair* const pair, const PairValueType second)
@@ -141,4 +144,5 @@ Error setSecond(Pair* const pair, const PairValueType second)
         return nullPointerError;
     }
     pair->second = second;
+    return ok;
 }

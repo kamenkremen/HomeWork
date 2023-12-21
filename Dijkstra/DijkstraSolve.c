@@ -6,8 +6,7 @@
 #include "PriorityQueue.h"
 #include "MyContainers.h"
 
-
-size_t* parseFile(const char* const fileName, size_t* const n, size_t* const m, size_t* const k, Graph* const graph, int* const errorCode)
+size_t* parseFile(const char* const fileName, size_t* const n, size_t* const m, size_t* const k, Graph** const graph, int* const errorCode)
 {
     FILE* file = NULL;
     fopen_s(&file, fileName, "r");
@@ -21,13 +20,11 @@ size_t* parseFile(const char* const fileName, size_t* const n, size_t* const m, 
         *errorCode = inputError;
         return NULL;
     }
-    for (size_t i = 0; i < *n; ++i)
+    *graph = createGraph(*n);
+    if (*graph == NULL)
     {
-        *errorCode = addVortex(graph);
-        if (*errorCode != ok)
-        {
-            return NULL;
-        }
+        *errorCode = memoryError;
+        return NULL;
     }
     for (size_t z = 0; z < *m; ++z)
     {
@@ -37,24 +34,28 @@ size_t* parseFile(const char* const fileName, size_t* const n, size_t* const m, 
         if (fscanf_s(file, "%zu %zu %zu", &i, &j, &length) != 3)
         {
             *errorCode = inputError;
+            deleteGraph(graph);
             return NULL;
         }
         --i;
         --j;
-        *errorCode = addEdge(graph, i, j, length);
+        *errorCode = addVertice(*graph, i, j, length);
         if (*errorCode != ok)
         {
+            deleteGraph(graph);
             return NULL;
         }
-        *errorCode = addEdge(graph, j, i, length);
+        *errorCode = addVertice(*graph, j, i, length);
         if (*errorCode != ok)
         {
+            deleteGraph(graph);
             return NULL;
         }
     }
     if (fscanf_s(file, "%zu", k) != 1)
     {
         *errorCode = inputError;
+        deleteGraph(graph);
         return NULL;
     }
 
@@ -65,6 +66,7 @@ size_t* parseFile(const char* const fileName, size_t* const n, size_t* const m, 
         if (fscanf_s(file, "%zu", &x) != 1)
         {
             free(capitals);
+            deleteGraph(graph);
             *errorCode = inputError;
             return NULL;
         }
@@ -141,15 +143,15 @@ int solve(const size_t n, const size_t m, const size_t k, const Graph* const gra
             used[current] = i + 1;
             distances[current] = length;
             --remaining;
-            Vector* vortexes = getAdjacentVortexes(graph, current, &errorCode);
+            Vector* vertexes = getAdjacentVertexes(graph, current, &errorCode);
             if (errorCode != ok)
             {
                 return finish(nations, distances, k, errorCode);
             }
-            size_t size = getVectorSize(vortexes);
+            size_t size = getVectorSize(vertexes);
             for (size_t j = 0; j < size; ++j)
             {
-                Pair* currentElement = getElement(vortexes, j, &errorCode);
+                Pair* currentElement = getElement(vertexes, j, &errorCode);
                 if (currentElement == NULL)
                 {
                     continue;

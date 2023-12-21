@@ -16,15 +16,10 @@ int main(void)
     }
     size_t n = 0;
     size_t m = 0;
-    Graph* graph = createGraph();
-    if (graph == NULL)
-    {
-        printf("MEMORY ERROR\n");
-        return memoryError;
-    }
     size_t k = 0;
     errorCode = ok;
-    size_t* capitals = parseFile("input.txt", &n, &m, &k, graph, &errorCode);
+    Graph* graph = NULL;
+    size_t* capitals = parseFile("input.txt", &n, &m, &k, &graph, &errorCode);
     if (errorCode != ok)
     {
         deleteGraph(&graph);
