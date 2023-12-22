@@ -9,7 +9,6 @@
 
 int main(void)
 {
-
     int errorCode = tests();
     if (errorCode != ok) 
     {
@@ -36,6 +35,5 @@ int main(void)
         return 1;
     }
     printf("Succesfully executed!\n");
-
     return ok;
 }
