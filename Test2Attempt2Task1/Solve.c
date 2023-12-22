@@ -25,13 +25,17 @@ static int readFile(Queue* const firstGroup, Queue* const secondGroup, Queue* co
     {
         return fileError;
     }
-    char symbol = 0;
-    while (1)
+    while (true)
     {
         int number = 0;
-        if (fscanf_s(inputFile, "%d", &number) != 1)
+        int scannedValues = fscanf_s(inputFile, "%d", &number);
+        if (scannedValues == EOF)
         {
             break;
+        }
+        else if (scannedValues != 1)
+        {
+            return readFileFinish(&inputFile, fileError);
         }
         if (number < a)
         {
