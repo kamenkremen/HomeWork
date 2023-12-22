@@ -14,6 +14,7 @@ static int solveFinish(Queue** const queue1, Queue** const queue2, Queue** const
 {
     deleteQueue(queue1);
     deleteQueue(queue2);
+    deleteQueue(queue3);
     return returnValue;
 }
 
