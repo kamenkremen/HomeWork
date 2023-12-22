@@ -26,9 +26,9 @@ int main(void)
         printf("ERROR IN FILE READING\n");
         return errorCode;
     }
-    size_t* used = (size_t*)calloc(n, sizeof(size_t));
-    errorCode = solve(n, m, k, graph, capitals, used);
-    if (errorCode != ok)
+    size_t* used = NULL;
+    errorCode = solve(n, m, k, graph, capitals, &used);
+    if (errorCode != ok || used == NULL)
     {
         printf("ERROR IN SOLVING\n");
         return errorCode;

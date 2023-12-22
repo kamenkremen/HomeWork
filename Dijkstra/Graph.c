@@ -85,7 +85,7 @@ GraphErrorCode addVertice(Graph* const graph, const size_t firstVertex, const si
     {
         return errorCode;
     }
-    errorCode = tryAddPair(graph, length, secondVertex, secondVertex);
+    errorCode = tryAddPair(graph, length, secondVertex, firstVertex);
     if (errorCode != ok)
     {
         return errorCode;

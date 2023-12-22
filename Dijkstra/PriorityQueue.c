@@ -70,7 +70,7 @@ PriorityQueue* createPriorityQueue(void)
         return NULL;
     }
     queue->capacity = 1;
-    queue->heap = (QueueElement**)calloc(1, sizeof(QueueElement));
+    queue->heap = (QueueElement**)calloc(1, sizeof(QueueElement*));
     if (queue->heap == NULL)
     {
         free(queue);
@@ -122,12 +122,12 @@ QueueValue pop(PriorityQueue* const queue, QueuePriority* const priority, QueueE
         return NULL;
     }
     QueueElement* minimum = queue->heap[0];
-    queue->heap[0] = queue->heap[queue->size - 1];
-    *errorCode = siftDown(queue, 0);
-    --queue->size;
     *priority = minimum->priority;
     QueueValue value = minimum->value;
     free(minimum);
+    queue->heap[0] = queue->heap[queue->size - 1];
+    *errorCode = siftDown(queue, 0);
+    --queue->size;
     return value;
 }
 
@@ -140,7 +140,7 @@ size_t getSize(const PriorityQueue* const queue)
     return queue->size;
 }
 
-void deleteQueue(PriorityQueue** const queue)
+void deleteQueue(PriorityQueue** queue)
 {
     if (queue == NULL)
     {
@@ -150,8 +150,8 @@ void deleteQueue(PriorityQueue** const queue)
     {
         QueuePriority priority = 0;
         QueueErrorCode errorCode = ok;
-        pop(queue, &priority, &errorCode);
+        pop(*queue, &priority, &errorCode);
     }
-    free((*queue)->heap);
+    (*queue)->heap = NULL;
     free(*queue);
 }

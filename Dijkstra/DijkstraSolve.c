@@ -45,12 +45,6 @@ size_t* parseFile(const char* const fileName, size_t* const n, size_t* const m, 
             deleteGraph(graph);
             return NULL;
         }
-        *errorCode = addVertice(*graph, j, i, length);
-        if (*errorCode != ok)
-        {
-            deleteGraph(graph);
-            return NULL;
-        }
     }
     if (fscanf_s(file, "%zu", k) != 1)
     {
@@ -76,17 +70,19 @@ size_t* parseFile(const char* const fileName, size_t* const n, size_t* const m, 
     return capitals;
 }
 
-static int finish(PriorityQueue** const nations, int* distances, const size_t size, const int returnCode)
+static int finish(PriorityQueue** const nations, int* const distances, size_t* const used, const size_t size, const int returnCode)
 {
     free(distances);
+    free(used);
     for (size_t i = 0; i < size; ++i)
     {
-        deleteQueue(nations[i]);
+        deleteQueue(&nations[i]);
     }
     free(nations);
+    return returnCode;
 }
 
-int solve(const size_t n, const size_t m, const size_t k, const Graph* const graph, const size_t* const capitals, size_t* const used)
+int solve(const size_t n, const size_t m, const size_t k, const Graph* const graph, const size_t* const capitals, size_t** const used)
 {
     PriorityQueue** nations = (PriorityQueue**)calloc(k, sizeof(PriorityQueue*));
     int errorCode = ok;
@@ -94,10 +90,17 @@ int solve(const size_t n, const size_t m, const size_t k, const Graph* const gra
     {
         return memoryError;
     }
+    *used = (size_t*)calloc(n, sizeof(size_t));
+    if (*used == NULL)
+    {
+        free(nations);
+        return memoryError;
+    }
     size_t* distances = (size_t*)calloc(n, sizeof(size_t));
     if (distances == NULL)
     {
         free(nations);
+        free(*used);
         return memoryError;
     }
     for (size_t i = 0; i < k; ++i)
@@ -105,15 +108,11 @@ int solve(const size_t n, const size_t m, const size_t k, const Graph* const gra
         nations[i] = createPriorityQueue();
         if (nations[i] == NULL || insert(nations[i], capitals[i], 0) != ok)
         {
-            for (size_t j = 0; j <= i; ++j)
-            {
-                deleteQueue(nations[j]);
-            }
-            free(nations);
-            return memoryError;
+            return finish(nations, distances, *used, i, memoryError);
         }
     }
     size_t remaining = n;
+
     while (remaining != 0)
     {
         for (size_t i = 0; i < k && remaining != 0; ++i)
@@ -126,27 +125,27 @@ int solve(const size_t n, const size_t m, const size_t k, const Graph* const gra
             size_t current = pop(nations[i], &length, &errorCode);
             if (errorCode != ok)
             {
-                return finish(nations, distances, k, errorCode);
+                return finish(nations, distances, *used, k, errorCode);
             }
-            while (getSize(nations[i]) != 0 && used[current] != 0)
+            while (getSize(nations[i]) != 0 && (*used)[current] != 0)
             {
                 current = pop(nations[i], &length, &errorCode);
                 if (errorCode != ok)
                 {
-                    return finish(nations, distances, k, errorCode);
+                    return finish(nations, distances, *used, k, errorCode);
                 }
             }
-            if (used[current] != 0)
+            if ((*used)[current] != 0)
             {
                 continue;
             }
-            used[current] = i + 1;
+            (*used)[current] = i + 1;
             distances[current] = length;
             --remaining;
             Vector* vertexes = getAdjacentVertexes(graph, current, &errorCode);
             if (errorCode != ok)
             {
-                return finish(nations, distances, k, errorCode);
+                return finish(nations, distances, *used, k, errorCode);
             }
             size_t size = getVectorSize(vertexes);
             for (size_t j = 0; j < size; ++j)
@@ -156,17 +155,17 @@ int solve(const size_t n, const size_t m, const size_t k, const Graph* const gra
                 {
                     continue;
                 }
-                if (used[getFirst(currentElement, &errorCode)] != 0)
+                if ((*used)[getFirst(currentElement, &errorCode)] != 0)
                 {
                     continue;
                 }
                 errorCode = insert(nations[i], getFirst(currentElement, &errorCode), getSecond(currentElement, &errorCode) + distances[current]);
                 if (errorCode != ok)
                 {
-                    return finish(nations, distances, k, errorCode);
+                    return finish(nations, distances, *used, k, errorCode);
                 }
             }
         }
     }
-    return ok;
+    return finish(nations, distances, NULL, k, ok);
 }

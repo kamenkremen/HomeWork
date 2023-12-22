@@ -11,7 +11,10 @@
 static int finish(Graph** const graph, size_t** const used, size_t** const capitals, const int returnValue)
 {
     deleteGraph(graph);
-    free(*used);
+    if (used != NULL)
+    {
+        free(*used);
+    }
     free(*capitals);
     return returnValue;
 }
@@ -24,18 +27,17 @@ static int parseTest(void)
     int errorCode = ok;
     Graph* graph = NULL;
     size_t* capitals = parseFile("test1.txt", &n, &m, &k, &graph, &errorCode);
+    deleteGraph(&graph);
     if (errorCode != ok)
     {
-        deleteGraph(&graph);
         return 2;
     }
-    deleteGraph(&graph);
-    if (n != 3 || m != 2 || k != 1 || capitals[0] != 0)
+    const size_t capital = capitals[0];
+    free(capitals);
+    if (n != 3 || m != 2 || k != 1 || capital != 0)
     {
-        free(capitals);
         return 3;
     }
-    free(capitals);
     return ok;
 }
 
@@ -51,14 +53,13 @@ static int solveTest(void)
     {
         return 2;
     }
-    size_t* used = (size_t*)calloc(n, sizeof(size_t));
+
+    size_t* used = NULL;
+    errorCode = solve(n, m, k, graph, capitals, &used);
     if (used == NULL)
     {
-        deleteGraph(&graph);
-        free(capitals);
-        return 3;
+        return finish(&graph, NULL, &capitals, 3);
     }
-    errorCode = solve(n, m, k, graph, capitals, used);
     if (errorCode != ok)
     {
         return finish(&graph, &used, &capitals, 4);
@@ -67,7 +68,6 @@ static int solveTest(void)
     {
         return finish(&graph, &used, &capitals, 5);
     }
-
     return finish(&graph, &used, &capitals, ok);
 }
 
@@ -80,6 +80,7 @@ int tests(void)
         printf("ERROR IN PARSE TEST, CASE %d\n", errorCode);
         error = errorCode;
     }
+
     errorCode = solveTest();
     if (errorCode != ok)
     {
