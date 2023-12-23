@@ -84,13 +84,9 @@ static Table* createTable(const size_t lines, const size_t columns)
         table->table[i] = (int*)calloc(columns, sizeof(int));
         if (table->table[i] == NULL)
         {
-            for (size_t j = 0; j < i; ++j)
-            {
-                free(table->table[j]);
-                free(table->table);
-                free(table);
-                return NULL;
-            }
+            deleteMatrix(&(table->table), i);
+            free(table);
+            return NULL;
         }
     }
     return table;
