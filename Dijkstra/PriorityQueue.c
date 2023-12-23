@@ -89,10 +89,14 @@ QueueErrorCode insert(PriorityQueue* const queue, const QueueValue value, const 
     {
         queue->capacity *= 2;
         QueueElement** buffer = (QueueElement**)realloc(queue->heap, queue->capacity * sizeof(QueueElement));
-        if (queue->heap == NULL)
+        if (buffer == NULL)
         {
             deleteQueue(&queue);
             return memoryError;
+        }
+        for (size_t i = 0; i < queue->size; ++i)
+        {
+            free(queue->heap[i]);
         }
         queue->heap = buffer;
     }

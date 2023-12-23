@@ -7,8 +7,8 @@
 
 struct Graph
 {
-    Vector** vertexes;
-    size_t amountOfVertexes;
+    Vector** vertices;
+    size_t amountOfVertices;
 };
 
 static int tryAddPair(Graph* const graph, const size_t length, const size_t index, const size_t vertex)
@@ -20,7 +20,7 @@ static int tryAddPair(Graph* const graph, const size_t length, const size_t inde
     }
     setSecond(pair, length);
     setFirst(pair, vertex);
-    int errorCode = addElement(graph->vertexes[index], pair);
+    int errorCode = addElement(graph->vertices[index], pair);
     if (errorCode != ok)
     {
         deletePair(&pair);
@@ -29,54 +29,54 @@ static int tryAddPair(Graph* const graph, const size_t length, const size_t inde
     return ok;
 }
 
-Graph* createGraph(const size_t amountOfVertexes)
+Graph* createGraph(const size_t amountOfVertices)
 {
     Graph* graph = (Graph*)calloc(1, sizeof(Graph));
     if (graph == NULL)
     {
         return NULL;
     }
-    graph->vertexes = (Vector**)calloc(amountOfVertexes, sizeof(Vector*));
-    if (graph->vertexes == NULL)
+    graph->vertices = (Vector**)calloc(amountOfVertices, sizeof(Vector*));
+    if (graph->vertices == NULL)
     {
         free(graph);
         return NULL;
     }
-    for (size_t i = 0; i < amountOfVertexes; ++i)
+    for (size_t i = 0; i < amountOfVertices; ++i)
     {
         Vector* newVector = createVector();
         if (newVector == NULL)
         {
             for (size_t j = 0; j < i; ++j)
             {
-                deleteVector(&graph->vertexes[j]);
+                deleteVector(&graph->vertices[j]);
             }
-            free(graph->vertexes);
+            free(graph->vertices);
             free(graph);
             return NULL;
         }
-        graph->vertexes[i] = newVector;
+        graph->vertices[i] = newVector;
     }
-    graph->amountOfVertexes = amountOfVertexes;
+    graph->amountOfVertices = amountOfVertices;
     return graph;
 }
 
-size_t getAmountOfVertexes(const Graph* const graph)
+size_t getAmountOfVertices(const Graph* const graph)
 {
     if (graph == NULL)
     {
         return 0;
     }
-    return graph->amountOfVertexes;
+    return graph->amountOfVertices;
 }
 
-GraphErrorCode addVertice(Graph* const graph, const size_t firstVertex, const size_t secondVertex, const size_t length)
+GraphErrorCode addEdge(Graph* const graph, const size_t firstVertex, const size_t secondVertex, const size_t length)
 {
     if (graph == NULL)
     {
         return nullPointerError;
     }
-    if (firstVertex >= graph->amountOfVertexes || secondVertex >= graph->amountOfVertexes)
+    if (firstVertex >= graph->amountOfVertices || secondVertex >= graph->amountOfVertices)
     {
         return indexOutOfRangeError;
     }
@@ -93,19 +93,19 @@ GraphErrorCode addVertice(Graph* const graph, const size_t firstVertex, const si
     return ok;
 }
 
-Vector* getAdjacentVertexes(const Graph* const graph, const size_t vertex, GraphErrorCode* const errorCode)
+Vector* getAdjacentVertices(const Graph* const graph, const size_t vertex, GraphErrorCode* const errorCode)
 {
     if (graph == NULL)
     {
         *errorCode = nullPointerError;
         return NULL;
     }
-    if (vertex >= graph->amountOfVertexes)
+    if (vertex >= graph->amountOfVertices)
     {
         *errorCode = indexOutOfRangeError;
         return NULL;
     }
-    return graph->vertexes[vertex];
+    return graph->vertices[vertex];
 }
 
 void deleteGraph(Graph** const graph)
@@ -114,9 +114,9 @@ void deleteGraph(Graph** const graph)
     {
         return;
     }
-    for (size_t i = 0; i < (*graph)->amountOfVertexes; ++i)
+    for (size_t i = 0; i < (*graph)->amountOfVertices; ++i)
     {
-        deleteVector(&(*graph)->vertexes[i]);
+        deleteVector(&(*graph)->vertices[i]);
     }
     free(*graph);
 }

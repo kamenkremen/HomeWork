@@ -43,7 +43,7 @@ PairValueType getFirst(const Pair* const pair, Error* const errorCode)
     if (pair == NULL)
     {
         *errorCode = nullPointerError;
-        return NULL;
+        return DEFAULT_PAIR_VALUE;
     }
     return pair->first;
 }
@@ -53,7 +53,7 @@ PairValueType getSecond(const Pair* const pair, Error* const errorCode)
     if (pair == NULL)
     {
         *errorCode = nullPointerError;
-        return NULL;
+        return DEFAULT_PAIR_VALUE;
     }
     return pair->second;
 }
@@ -63,12 +63,12 @@ VectorValueType getElement(const Vector* const vector, const size_t index, Error
     if (vector == NULL)
     {
         *errorCode = nullPointerError;
-        return NULL;
+        return DEFAULT_VECTOR_VALUE;
     }
     if (vector->size <= index)
     {
         *errorCode = indexOutOfRangeError;
-        return NULL;
+        return DEFAULT_VECTOR_VALUE;
     }
     return vector->elements[index];
 }
@@ -88,6 +88,10 @@ Error addElement(Vector* const vector, const VectorValueType element)
         {
             deleteVector(&vector);
             return memoryError;
+        }
+        for (size_t i = 0; i < vector->size; ++i)
+        {
+            vector->elements[i] = NULL;
         }
         vector->elements = buffer;
     }

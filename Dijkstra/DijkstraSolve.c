@@ -39,7 +39,7 @@ size_t* parseFile(const char* const fileName, size_t* const n, size_t* const m, 
         }
         --i;
         --j;
-        *errorCode = addVertice(*graph, i, j, length);
+        *errorCode = addEdge(*graph, i, j, length);
         if (*errorCode != ok)
         {
             deleteGraph(graph);
@@ -142,15 +142,15 @@ int solve(const size_t n, const size_t m, const size_t k, const Graph* const gra
             (*used)[current] = i + 1;
             distances[current] = length;
             --remaining;
-            Vector* vertexes = getAdjacentVertexes(graph, current, &errorCode);
+            Vector* vertices = getAdjacentVertices(graph, current, &errorCode);
             if (errorCode != ok)
             {
                 return finish(nations, distances, *used, k, errorCode);
             }
-            size_t size = getVectorSize(vertexes);
+            size_t size = getVectorSize(vertices);
             for (size_t j = 0; j < size; ++j)
             {
-                Pair* currentElement = getElement(vertexes, j, &errorCode);
+                Pair* currentElement = getElement(vertices, j, &errorCode);
                 if (currentElement == NULL)
                 {
                     continue;

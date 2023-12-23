@@ -2,6 +2,10 @@
 
 #include <stdlib.h>
 
+#define DEFAULT_PAIR_VALUE 0
+
+#define DEFAULT_VECTOR_VALUE NULL
+
 typedef size_t PairValueType;
 
 typedef struct Pair Pair;
