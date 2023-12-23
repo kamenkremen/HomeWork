@@ -94,6 +94,10 @@ Error addElement(Vector* const vector, const VectorValueType element)
             vector->elements[i] = NULL;
         }
         vector->elements = buffer;
+        for (size_t i = vector->size; i < vector->capacity; ++i)
+        {
+            vector->elements[i] = NULL;
+        }
     }
     vector->elements[vector->size - 1] = element;
     return ok;

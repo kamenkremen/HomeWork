@@ -96,9 +96,13 @@ QueueErrorCode insert(PriorityQueue* const queue, const QueueValue value, const 
         }
         for (size_t i = 0; i < queue->size; ++i)
         {
-            free(queue->heap[i]);
+            queue->heap[i] = NULL;
         }
         queue->heap = buffer;
+        for (size_t i = queue->size; i < queue->capacity; ++i)
+        {
+            queue->heap[i] = NULL;
+        }
     }
     QueueElement* newElement = (QueueElement*)calloc(1, sizeof(QueueElement));
     if (newElement == NULL)
