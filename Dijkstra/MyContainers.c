@@ -89,10 +89,6 @@ Error addElement(Vector* const vector, const VectorValueType element)
             deleteVector(&vector);
             return memoryError;
         }
-        for (size_t i = 0; i < vector->size; ++i)
-        {
-            vector->elements[i] = NULL;
-        }
         vector->elements = buffer;
         for (size_t i = vector->size; i < vector->capacity; ++i)
         {

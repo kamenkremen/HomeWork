@@ -94,11 +94,6 @@ QueueErrorCode insert(PriorityQueue* const queue, const QueueValue value, const 
             deleteQueue(&queue);
             return memoryError;
         }
-        for (size_t i = 0; i < queue->size; ++i)
-        {
-            queue->heap[i] = NULL;
-        }
-        queue->heap = buffer;
         for (size_t i = queue->size; i < queue->capacity; ++i)
         {
             queue->heap[i] = NULL;
