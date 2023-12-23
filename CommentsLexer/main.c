@@ -16,16 +16,23 @@ int main(void)
         return FAILED_TEST;
     }
     size_t lines = 0;
-    const int* const * const table = readTable("table.txt", &lines);
+    const Table* const table = readTable("table.txt", &lines);
+    if (table == NULL)
+    {
+        printf("MEMORY ERROR\n");
+        return memoryError;
+    }
     const char* const string = readFile("file.txt");
+    if (string == NULL)
+    {
+        freeTable(&table);
+        printf("MEMORY ERROR\n");
+        return memoryError;
+    }
     const char* const comments = getComments(string, table, &errorCode);
     free(string);
-    for (size_t i = 0; i < lines; ++i)
-    {
-        free(table[i]);
-    }
-    free(table);
-    if (errorCode != ok)
+    freeTable(&table);
+    if (errorCode != ok || comments == NULL)
     {
         printf("MEMORY ERROR\n");
         free(comments);

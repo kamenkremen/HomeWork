@@ -1,9 +1,11 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
+#include <stdbool.h>
 
 #include "CommentsLexer.h"
 #include "ErrorCodes.h"
+#include "Files.h"
 
 enum States
 {
@@ -13,7 +15,20 @@ enum States
     afterStar,
 };
 
-char* getComments(const char* const string, const int* const* const table)
+static bool relocate(char** const string, size_t* const capacity)
+{
+    *capacity *= 2;
+    char* buffer = (char*)realloc(*string, *capacity);
+    if (buffer == NULL)
+    {
+        free(*string);
+        return true;
+    }
+    *string = buffer;
+    return false;
+}
+
+char* getComments(const char* const string, const Table* const table)
 {
     int state = notComment;
     size_t currentIndex = 0;
@@ -38,31 +53,23 @@ char* getComments(const char* const string, const int* const* const table)
             {
                 if (size >= capacity)
                 {
-                    capacity *= 2;
-                    char* buffer = (char*)realloc(comments, capacity);
-                    if (buffer == NULL)
+                    if (relocate(&comments, &capacity))
                     {
-                        free(comments);
-                        return;
+                        return NULL;
                     }
-                    comments = buffer;
                 }
                 comments[size] = string[currentIndex];
                 ++size;
             }
-            state = table[state][string[currentIndex]];
+            state = table->table[state][string[currentIndex]];
             break;
         case afterStar:
             if (size + 1 >= capacity)
             {
-                capacity *= 2;
-                char* buffer = (char*)realloc(comments, capacity);
-                if (buffer == NULL)
+                if (relocate(&comments, &capacity))
                 {
-                    free(comments);
-                    return;
+                    return NULL;
                 }
-                comments = buffer;
             }
             if (string[currentIndex] == '/')
             {
@@ -76,7 +83,7 @@ char* getComments(const char* const string, const int* const* const table)
             }
             ++size;
         default:
-            state = table[state][string[currentIndex]];
+            state = table->table[state][string[currentIndex]];
             break;
         }
     }
