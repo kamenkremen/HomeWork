@@ -118,12 +118,12 @@ QueueValue pop(PriorityQueue* const queue, QueuePriority* const priority, QueueE
     if (queue == NULL)
     {
         *errorCode = nullPointerError;
-        return NULL;
+        return DEFAULT_QUEUE_VALUE;
     }
     if (queue->size == 0)
     {
         *errorCode = indexOutOfRangeError;
-        return NULL;
+        return DEFAULT_QUEUE_VALUE;
     }
     QueueElement* minimum = queue->heap[0];
     *priority = minimum->priority;

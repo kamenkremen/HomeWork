@@ -2,6 +2,8 @@
 
 #include <stdlib.h>
 
+#define DEFAULT_QUEUE_VALUE 0
+
 // type of value contained in queue
 typedef int QueueValue;
 
