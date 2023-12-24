@@ -15,11 +15,11 @@ static int finish(char* comments, const int returnValue, Table** const table, co
 static int commentsLexerTest(void)
 {
     const Table* const table = readTable("table.txt");
-    size_t lines = table->lines;
     if (table == NULL)
     {
         return 1;
     }
+    size_t lines = table->lines;
     int errorCode = ok;
     char* comments = getComments("test/*test*/", table, &errorCode);
     if (comments == NULL || strcmp(comments, "test") != 0 || errorCode != ok)
