@@ -24,7 +24,6 @@ int main(void)
         printf(MEMORY_ERROR_MESSAGE);
         return memoryError;
     }
-    printf("%s\n", string);
     size_t size = 0;
     const char* const* const words = getWords(string, &size, &errorCode);
     free(string);
