@@ -2,9 +2,9 @@
 
 enum ErrorCodes
 {
-	ok,
-	memoryError,
-	inputError,
-	nullPointerError,
-	noSuchElement,
+    ok,
+    memoryError,
+    inputError,
+    nullPointerError,
+    noSuchElement,
 };

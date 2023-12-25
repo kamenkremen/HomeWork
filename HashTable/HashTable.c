@@ -8,41 +8,45 @@
 
 struct Table
 {
-    size_t amount;
     size_t size;
-    List* hashes[HASH_SIZE];
+    List** hashes;
 };
 
-static int hash(const char* const string)
+static int hash(const char* const string, const size_t size)
 {
+    // разве если вынести взятие по модулю из этой функции, то не будет очень быстро происходить переполнение?
     int result = 0;
     for (size_t i = 0; i < strlen(string); ++i)
     {
-        result = (result * 257 + string[i]) % HASH_SIZE;
+        result = (result * 257 + string[i]) % size;
     }
     return result;
 }
 
-Table* createTable(void)
+Table* createTable(const size_t hashSize)
 {
     Table* newTable = (Table*)calloc(1, sizeof(Table));
     if (newTable == NULL)
     {
         return newTable;
     }
-    newTable->size = HASH_SIZE;
-    newTable->amount = 0;
+    newTable->size = hashSize;
+    newTable->hashes = (List**)calloc(hashSize, sizeof(List*));
+    if (newTable->hashes == NULL)
+    {
+        free(newTable);
+        return NULL;
+    }
     return newTable;
 }
 
-int addToTable(Table* const table, const char* const value)
+TableError addToTable(Table* const table, const char* const value)
 {
-
     if (table == NULL)
     {
         return nullPointerError;
     }
-    const int hashWord = hash(value);
+    const int hashWord = hash(value, table->size);
 
     if (table->hashes[hashWord] == NULL)
     {
@@ -52,31 +56,41 @@ int addToTable(Table* const table, const char* const value)
             return memoryError;
         }
     }
-    if (!isContains(table->hashes[hashWord], value))
+    const char* const valueCopy = (char*)calloc(strlen(value), sizeof(char));
+    if (valueCopy == NULL)
     {
-        ++table->amount;
+        return memoryError;
     }
-    return addWord(table->hashes[hashWord], value);
+    strcpy_s(valueCopy, strlen(value) + 1, value);
+    return addWord(table->hashes[hashWord], valueCopy);
 }
 
-float loadFactor(const Table* const table, int* const errorCode)
+float loadFactor(const Table* const table, TableError* const errorCode)
+{
+    if (table == NULL)
+    {
+        *errorCode = nullPointerError;
+        return 0;
+    }
+    size_t amount = 0;
+    for (size_t i = 0; i < table->size; ++i)
+    {
+        if (table->hashes[i] != NULL)
+        {
+            ++amount;
+        }
+    }
+    return (float)amount / (float)table->size;
+}
+
+size_t maxListLength(const Table* const table, TableError* const errorCode)
 {
     if (table == NULL)
     {
         *errorCode = nullPointerError;
         return nullPointerError;
     }
-    return (float)table->amount / (float)table->size;
-}
-
-size_t maxListLength(const Table* const table, int* const errorCode)
-{
-    if (table == NULL)
-    {
-        *errorCode = nullPointerError;
-        return nullPointerError;
-    }
-    int maxLength = 0;
+    size_t maxLength = 0;
     for (size_t i = 0; i < table->size; ++i)
     {
         if (table->hashes[i] == NULL)
@@ -89,12 +103,12 @@ size_t maxListLength(const Table* const table, int* const errorCode)
     return maxLength;
 }
 
-float averageListLength(const Table* const table, int* const errorCode)
+float averageListLength(const Table* const table, TableError* const errorCode)
 {
     if (table == NULL)
     {
         *errorCode = nullPointerError;
-        return nullPointerError;
+        return 0;
     }
     size_t amountOfLists = 0;
     size_t amountOfNodes = 0;
@@ -108,9 +122,9 @@ float averageListLength(const Table* const table, int* const errorCode)
     }
     if (amountOfLists == 0)
     {
-        ++amountOfLists;
+        return 0;
     }
-    return (float)amountOfNodes / (float)amountOfLists;
+    return (float)amountOfNodes / amountOfLists;
 }
 
 void printTable(const Table* const table)
@@ -124,15 +138,6 @@ void printTable(const Table* const table)
     }
 }
 
-List* getList(const Table* const table, const size_t index)
-{
-    if (table == NULL || index >= table->size)
-    {
-        return NULL;
-    }
-    return table->hashes[index];
-}
-
 void deleteTable(Table** const table)
 {
     for (size_t i = 0; i < (*table)->size; ++i)
@@ -142,58 +147,15 @@ void deleteTable(Table** const table)
             deleteList(&((*table)->hashes[i]));
         }
     }
+    free((*table)->hashes);
     free(*table);
 }
 
-int addWordsToTable(Table* const table, const char* const string)
+size_t getBucketSize(const Table* const table, const size_t index)
 {
-    char* word = (char*)calloc(1, sizeof(char));
-    size_t capacity = 1;
-    size_t wordLength = 0;
-    if (word == NULL)
+    if (table == NULL || index >= table->size)
     {
-        return memoryError;
+        return 0;
     }
-    size_t length = strlen(string);
-    for (size_t i = 0; i < length; ++i)
-    {
-        if (string[i] == ' ' || string[i] == '\n')
-        {
-            if (wordLength == 0)
-            {
-                continue;
-            }
-            word[wordLength] = '\0';
-            int errorCode = addToTable(table, word);
-            if (errorCode != ok)
-            {
-                free(word);
-                return errorCode;
-            }
-            word = (char*)calloc(1, sizeof(char));
-            wordLength = 0;
-            capacity = 1;
-            if (word == NULL)
-            {
-                return memoryError;
-            }
-        }
-        else
-        {
-            word[wordLength] = string[i];
-            ++wordLength;
-            if (wordLength >= capacity)
-            {
-                capacity *= 2;
-                word = (char*)realloc(word, capacity);
-                if (word == NULL)
-                {
-                    return memoryError;
-                }
-            }
-        }
-    }
-    word[wordLength] = '\0';
-    int errorCode = addToTable(table, word);
-    return errorCode;
+    return getSize(table->hashes[index]);
 }

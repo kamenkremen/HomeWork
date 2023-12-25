@@ -1,8 +1,17 @@
 #include <stdlib.h>
+#include <time.h>
 
 #include "Tests.h"
 #include "HashTable.h"
 #include "List.h"
+#include "ErrorCodes.h"
+#include "Strings.h"
+
+#define MAX_STRING_LENGTH 10
+#define MIN_STRING_LENGTH 2
+#define MAX_CHAR_SIZE 256
+#define AMOUNT_OF_WORDS 1000000
+#define MAX_DURATION 10
 
 static int finish(Table** const table, const int errorCode)
 {
@@ -10,39 +19,78 @@ static int finish(Table** const table, const int errorCode)
     return errorCode;
 }
 
+static char* generateWord(void)
+{
+    size_t size = MIN_STRING_LENGTH + rand() % MAX_STRING_LENGTH;
+    char* word = (char*)calloc(size, sizeof(char));
+    if (word == NULL)
+    {
+        return NULL;
+    }
+    for (size_t i = 0; i < size - 1; ++i)
+    {
+        word[i] = rand() % MAX_CHAR_SIZE;
+    }
+    word[size - 1] = '/0';
+    return word;
+}
+
 static int testHashTable(void)
 {
-    Table* table = createTable();
-    if (table == NULL)
+    const char* const string = read("test1.txt");
+    if (string == NULL)
     {
         return 1;
     }
-    int errorCode = addWordsToTable(table, "test1 test2");
+    int errorCode = ok;
+    size_t size = 0;
+    const char* const* const words = getWords(string, &size, &errorCode);
+    free(string);
     if (errorCode != ok)
     {
-        return finish(&table, 2);
+        deleteWords(&words, size);
+        return 2;
     }
-    if (addToTable(table, "3tset") != ok)
+    Table* table = createTable(3);
+    if (table == NULL)
     {
-        return finish(&table, 3);
+        deleteWords(&words, size);
+        return 3;
     }
-    List* list1 = getList(table, 66);
-    List* list2 = getList(table, 67);
-    List* list3 = getList(table, 207);
-    if (list1 == NULL || list2 == NULL || list3 == NULL || getSize(list1) != 1 || getSize(list2) != 1 || getSize(list3) != 1)
+    for (size_t i = 0; i < size; ++i)
     {
-        return finish(&table, 4);
+        errorCode = addToTable(table, words[i]);
+        if (errorCode != ok)
+        {
+            deleteWords(&words, size);
+            deleteTable(&table);
+            return 4;
+        }
     }
-    errorCode = ok;
-    if ((int)(loadFactor(table, &errorCode) * 1000000) != 10238 || errorCode != ok)
+    deleteWords(&words, size);
+    if (getBucketSize(table, 0) != 2 || getBucketSize(table, 1) != 1 || getBucketSize(table, 2) != 1)
     {
         return finish(&table, 5);
     }
-    if (averageListLength(table, &errorCode) != (float)1 || errorCode != ok)
+    deleteTable(&table);
+    table = createTable(100000);
+    clock_t before = clock();
+    for (size_t i = 0; i < AMOUNT_OF_WORDS; ++i)
     {
-        return finish(&table, 6);
+        char* word = generateWord();
+        if (word == NULL)
+        {
+            return finish(&table, 6);
+        }
+        errorCode = addToTable(table, word);
+        if (errorCode != ok)
+        {
+            return finish(&table, 6);
+        }
     }
-    if (maxListLength(table, &errorCode) != 1 || errorCode != ok)
+    clock_t after = clock();
+    double duration = (double)(after - before) / CLOCKS_PER_SEC;
+    if (duration > MAX_DURATION)
     {
         return finish(&table, 7);
     }

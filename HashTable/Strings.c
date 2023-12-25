@@ -3,6 +3,20 @@
 #include <string.h>
 
 #include "Strings.h"
+#include "ErrorCodes.h"
+
+void deleteWords(char*** const words, const size_t size)
+{
+    if (words == NULL)
+    {
+        return;
+    }
+    for (size_t j = 0; j < size; ++j)
+    {
+        free((*words)[j]);
+    }
+    free(*words);
+}
 
 char* read(const char* const fileName)
 {
@@ -21,32 +35,78 @@ char* read(const char* const fileName)
         return NULL;
     }
     char symbol = getc(file);
-    while (symbol != "\n" && symbol != EOF)
+    while (symbol != EOF)
     {
-        if (length >= capacity)
+        if (length + 1 >= capacity)
         {
             capacity *= 2;
-            string = realloc(string, capacity);
-            if (string == NULL)
+            char* buffer = realloc(string, capacity);
+            if (buffer == NULL)
             {
+                free(string);
                 fclose(file);
                 return NULL;
             }
+            string = buffer;
         }
         string[length] = symbol;
         ++length;
         symbol = getc(file);
     }
     fclose(file);
-    if (length >= capacity)
-    {
-        ++capacity;
-        string = realloc(&string, capacity);
-        if (string == NULL)
-        {
-            return NULL;
-        }
-    }
     string[length] = '\0';
     return string;
+}
+
+char** getWords(const char* const string, size_t* const size, StringError* const errorCode)
+{
+    char** words = (char**)calloc(1, sizeof(char*));
+    size_t currentWord = 0;
+    size_t wordsCapacity = 1;
+    size_t stringLength = strlen(string);
+    size_t previousSpace = -1;
+    char* word = NULL;
+    for (size_t i = 0; i <= stringLength; ++i)
+    {
+        if (i == stringLength || string[i] == ' ')
+        {
+            if (i != stringLength && i != 0 && string[i - 1] == ' ')
+            {
+                previousSpace = i;
+                continue;
+            }
+            if (currentWord >= wordsCapacity)
+            {
+                wordsCapacity *= 2;
+                char** buffer = (char**)realloc(words, sizeof(char*) * wordsCapacity);
+                if (buffer == NULL)
+                {
+                    deleteWords(&words, currentWord);
+                    *errorCode = memoryError;
+                    return NULL;
+                }
+                words = buffer;
+                for (size_t j = currentWord; j < wordsCapacity; ++j)
+                {
+                    words[j] = NULL;
+                }
+            }
+            word = (char*)calloc(i - previousSpace + 1, sizeof(char));
+            if (word == NULL)
+            {
+                deleteWords(&words, currentWord);
+                *errorCode = memoryError;
+                return NULL;
+            }
+            for (size_t j = 0; j < i - previousSpace - 1; ++j)
+            {
+                word[j] = string[j + previousSpace + 1];
+            }
+            words[currentWord] = word;
+            ++currentWord;
+            previousSpace = i;
+        }
+    }
+    *size = currentWord;
+    return words;
 }
