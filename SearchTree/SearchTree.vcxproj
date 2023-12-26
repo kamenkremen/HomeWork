@@ -129,11 +129,13 @@
   <ItemGroup>
     <ClCompile Include="main.c" />
     <ClCompile Include="SearchTree.c" />
+    <ClCompile Include="Strings.c" />
     <ClCompile Include="Test.c" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="errorCodes.h" />
     <ClInclude Include="SearchTree.h" />
+    <ClInclude Include="Strings.h" />
     <ClInclude Include="Test.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

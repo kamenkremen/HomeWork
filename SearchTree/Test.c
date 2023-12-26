@@ -1,70 +1,85 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 
 #include "SearchTree.h"
 #include "Test.h"
 
-bool* test()
+static int finish(Tree** const tree, const int returnValue)
 {
-    bool* failedCases[NUMBER_OF_TESTS] = { 0 };
+    deleteTree(tree);
+    return returnValue;
+}
+
+static int treeTest(void)
+{
     Tree* tree = createTree();
-    if (delete(tree, 1234) != noSuchElement)
+    if (delete(tree, 1234))
     {
-        failedCases[0] = true;
+        return finish(&tree, 1);
     }
     if (tree == NULL)
     {
-        failedCases[1] = true;
+        return finish(&tree, 2);
     }
     int errorCode = ok;
     if (contains(tree, 5, &errorCode) || errorCode != ok)
     {
-        failedCases[2] = true;
+        return finish(&tree, 3);
     }
     if (add(tree, 5, "test") != ok)
     {
-        failedCases[3] = true;
+        return finish(&tree, 4);
     }
     if (!contains(tree, 5, &errorCode) || errorCode != ok)
     {
-        failedCases[4] = true;
+        return finish(&tree, 5);
     }
-    if (get(tree, 5, &errorCode) != "test" || errorCode != ok)
+    if (strcmp(get(tree, 5, &errorCode), "test") != 0 || errorCode != ok)
     {
-        failedCases[5] = true;
+        return finish(&tree, 6);
     }
     if (add(tree, 6, "test2") != ok)
     {
-        failedCases[6] = true;
+        return finish(&tree, 7);
     }
     if (add(tree, 1, "test") != ok)
     {
-        failedCases[7] = true;
+        return finish(&tree, 8);
     }
-    if (get(tree, 1, &errorCode) != "test" || errorCode != ok)
+    if (strcmp(get(tree, 1, &errorCode), "test") != 0 || errorCode != ok)
     {
-        failedCases[8] = true;
+        return finish(&tree, 9);
     }
-    if (get(tree, 6, &errorCode) != "test2" || errorCode != ok)
+    if (strcmp(get(tree, 6, &errorCode), "test2") != 0 || errorCode != ok)
     {
-        failedCases[9] = true;
+        return finish(&tree, 10);
     }
-    if (delete(tree, 6) != ok)
+    if (delete(tree, 6))
     {
-        failedCases[10] = true;
+        return finish(&tree, 11);
     }
     if (contains(tree, 6, &errorCode) || errorCode != ok)
     {
-        failedCases[11] = true;
+        return finish(&tree, 12);
     }
-    if (delete(tree, 6) != noSuchElement)
+    if (delete(tree, 6))
     {
-        failedCases[12] = true;
+        return finish(&tree, 13);
     }
-    if (delete(tree, 7) != noSuchElement)
+    if (delete(tree, 7))
     {
-        failedCases[13] = true;
+        return finish(&tree, 14);
     }
-    deleteTree(&tree);
-    return failedCases;
+    return finish(&tree, 0);
+}
+
+int tests(void)
+{
+    const int errorCode = treeTest();
+    if (errorCode != ok)
+    {
+        printf("ERROR IN TESTS, CASE %d\n", errorCode);
+    }
+    return errorCode;
 }

@@ -18,6 +18,16 @@ struct Tree
     TreeElement* root;
 };
 
+static void freeNode(TreeElement* node)
+{
+    if (node == NULL)
+    {
+        return;
+    }
+    free(node->value);
+    free(node);
+}
+
 Tree* createTree(void)
 {
     return (Tree*)calloc(1, sizeof(Tree));
@@ -28,29 +38,7 @@ static TreeElement* getNeededChild(const TreeElement* const element, const int k
     return (element == NULL ? NULL : (key > element->key ? element->rightChild : element->leftChild));
 }
 
-static TreeElement* getParent(const Tree* const tree, const int key, int* const errorCode)
-{
-    if (tree == NULL)
-    {
-        *errorCode = nullPointerError;
-        return NULL;
-    }
-    TreeElement* current = tree->root;
-    if (current == NULL)
-    {
-        *errorCode = noSuchElement;
-        return NULL;
-    }
-    if (current->key == key)
-    {
-        return NULL;
-    }
-    TreeElement* child = getNeededChild(current, key);
-    for (; child != NULL && child->key != key; current = child);
-    return current;
-}
-
-int add(Tree* const tree, const int key, const char* value)
+int add(Tree* const tree, const int key, const char* const value)
 {
     if (tree == NULL)
     {
@@ -62,15 +50,10 @@ int add(Tree* const tree, const int key, const char* value)
     {
         return memoryError;
     }
-    newElement->key = stringCopy(key);
-    if (newElement->key == NULL) {
-        free(newElement);
-        return memoryError;
-    }
+    newElement->key = key;
     newElement->value = stringCopy(value);
     if (newElement->value == NULL)
     {
-        free(newElement->key);
         free(newElement);
         return memoryError;
     }
@@ -85,9 +68,7 @@ int add(Tree* const tree, const int key, const char* value)
         free(current->value);
         current->value = stringCopy(value);
         if (current->value == NULL) {
-            free(newElement->key);
-            free(newElement->value);
-            free(newElement);
+            freeNode(newElement);
             return memoryError;
         }
     }
@@ -102,20 +83,30 @@ int add(Tree* const tree, const int key, const char* value)
     return ok;
 }
 
-char* get(const Tree* const tree, const int key, int* const errorCode)
+static char* staticGet(const TreeElement* const node, const int key)
 {
-    TreeElement* parent = getParent(tree, key, errorCode);
-    if (*errorCode != ok)
+    if (node == NULL)
     {
-        if (*errorCode == noSuchElement)
-        {
-            *errorCode = ok;
-        }
         return NULL;
     }
-    TreeElement* child = getNeededChild(parent, key);
-    return (parent == NULL) ? (tree->root->value) : 
-        (child == NULL || child->key != key ? NULL : child->value);
+    if (key > node->key)
+    {
+        return staticGet(node->rightChild, key);
+    }
+    if (key < node->key)
+    {
+        return staticGet(node->leftChild, key);
+    }
+    return node->value;
+}
+
+char* get(const Tree* const tree, const int key)
+{
+    if (tree == NULL)
+    {
+        return NULL;
+    }
+    return staticGet(tree->root, key);
 }
 
 static void setChild(Tree* const tree, TreeElement* const parent, const int key, const TreeElement* const newChild)
@@ -134,86 +125,64 @@ static void setChild(Tree* const tree, TreeElement* const parent, const int key,
         parent->rightChild = newChild;
     }
 }
-
-static TreeElement* deleteElementStatic(TreeElement* node, const char* key)
+static TreeElement* deleteNode(const TreeElement* const node)
 {
-    if (node == NULL)
-    {
-        return;
-    }
-    int compare = strcmp(key, node->key);
-    if (compare > 0)
-    {
-        node->rightChild = deleteElementStatic(node->rightChild, key);
-    }
-    else if (compare < 0)
-    {
-        node->leftChild = deleteElementStatic(node->leftChild, key);
-    }
-    else
-    {
-        node = deleteNode(node);
-    }
     if (node == NULL)
     {
         return node;
     }
-    updateHeight(node);
-    node = balance(node);
+    if (node->rightChild == NULL)
+    {
+        TreeElement* buffer = node->leftChild;;
+        freeNode(node);
+        return buffer;
+    }
+    if (node->rightChild->leftChild == NULL)
+    {
+        node->rightChild->leftChild = node->leftChild;
+        TreeElement* buffer = node->rightChild;
+        freeNode(node);
+        return buffer;
+    }
+    TreeElement* previous = node;
+    TreeElement* current = node->rightChild;
+    for (; current->leftChild != NULL; previous = current, current = current->leftChild);
+    previous->leftChild = current->rightChild;
+    current->rightChild = node->rightChild;
+    current->leftChild = node->leftChild;
+    freeNode(node);
+    return current;
+}
+
+static TreeElement* staticDelete(TreeElement* const node, const int key)
+{
+    if (node == NULL)
+    {
+        return NULL;
+    }
+    if (key == node->key)
+    {
+        return deleteNode(node);
+    }
+    if (key > node->key)
+    {
+        node->rightChild = staticDelete(node->rightChild, key);
+    }
+    else
+    {
+        node->leftChild = staticDelete(node->leftChild, key);
+    }
     return node;
 }
 
-bool deleteElement(Tree* const tree, const char* key)
+bool delete(Tree* const tree, const int key)
 {
     if (tree == NULL)
     {
         return true;
     }
-    tree->root = deleteElementStatic(tree->root, key);
+    tree->root = staticDelete(tree->root, key);
     return false;
-}
-
-
-int delete(Tree* const tree, const int key)
-{
-    if (tree == NULL)
-    {
-        return nullPointerError;
-    }
-    if (tree->root == NULL)
-    {
-        return noSuchElement;
-    }
-    int errorCode = ok;
-    TreeElement* parent = getParent(tree, key, &errorCode);
-    if (errorCode != ok)
-    {
-        return errorCode;
-    }
-    TreeElement* element = (parent == NULL ? tree->root : getNeededChild(parent, key));
-    if (element == NULL)
-    {
-        return noSuchElement;
-    }
-    if (element->leftChild == NULL)
-    {
-        setChild(tree, parent, key, element->rightChild);
-        free(element);
-        return ok;
-    }
-    if (element->leftChild->rightChild == NULL)
-    {
-        setChild(tree, parent, key, element->leftChild);
-        free(element);
-        return ok;
-    }
-    TreeElement* current = element->leftChild;
-    TreeElement* previous = element->leftChild;
-    for (; current->rightChild != NULL; previous = current, current = current->rightChild);
-    previous->rightChild = NULL;
-    setChild(tree, parent, key, current);
-    free(element);
-    return ok;
 }
 
 bool contains(const Tree* const tree, const int key, int* const errorCode)
@@ -221,24 +190,24 @@ bool contains(const Tree* const tree, const int key, int* const errorCode)
     return get(tree, key, errorCode) != NULL;
 }
 
-static void deleteNodes(TreeElement** const node)
+static void deleteNodes(TreeElement* const node)
 {
-    if ((*node)->rightChild != NULL)
+    if (node->rightChild != NULL)
     {
-        deleteNodes(&((*node)->rightChild));
+        deleteNodes(node->rightChild);
     }
-    if ((*node)->leftChild != NULL)
+    if (node->leftChild != NULL)
     {
-        deleteNodes(&((*node)->leftChild));
+        deleteNodes(node->leftChild);
     }
-    free(*node);
+    freeNode(node);
 }
 
 void deleteTree(Tree** const tree)
 {
     if ((*tree)->root != NULL)
     { 
-        deleteNodes(&((*tree)->root));
+        deleteNodes(((*tree)->root));
     }
     free(*tree);
 }
