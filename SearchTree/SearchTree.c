@@ -3,6 +3,7 @@
 #include <string.h>
 
 #include "SearchTree.h"
+#include "Strings.h"
 
 typedef struct TreeElement
 {
@@ -44,7 +45,8 @@ static TreeElement* getParent(const Tree* const tree, const int key, int* const 
     {
         return NULL;
     }
-    for (; getNeededChild(current, key) != NULL && getNeededChild(current, key)->key != key; current = getNeededChild(current, key));
+    TreeElement* child = getNeededChild(current, key);
+    for (; child != NULL && child->key != key; current = child);
     return current;
 }
 
@@ -60,20 +62,18 @@ int add(Tree* const tree, const int key, const char* value)
     {
         return memoryError;
     }
-    newElement->key = (char*)calloc(strlen(key), sizeof(char));
+    newElement->key = stringCopy(key);
     if (newElement->key == NULL) {
         free(newElement);
         return memoryError;
     }
-    newElement->value = (char*)calloc(strlen(value), sizeof(char));
+    newElement->value = stringCopy(value);
     if (newElement->value == NULL)
     {
-        free(newElement->value);
+        free(newElement->key);
         free(newElement);
         return memoryError;
     }
-    strcpy_s(newElement->value, strlen(value), value);
-    strcpy_s(newElement->key, strlen(key), key);
     if (current == NULL)
     {
         tree->root = newElement;
@@ -82,18 +82,16 @@ int add(Tree* const tree, const int key, const char* value)
     for (; getNeededChild(current, key) != NULL; current = getNeededChild(current, key));
     if (key == current->key)
     {
-        current->value = (char*)calloc(strlen(value), sizeof(char));
+        free(current->value);
+        current->value = stringCopy(value);
         if (current->value == NULL) {
             free(newElement->key);
             free(newElement->value);
             free(newElement);
             return memoryError;
         }
-        strcpy_s(current->value, strlen(value), value);
-        return ok;
     }
-    
-    if (key > current->key)
+    else if (key > current->key)
     {
         current->rightChild = newElement;
     }
@@ -136,6 +134,45 @@ static void setChild(Tree* const tree, TreeElement* const parent, const int key,
         parent->rightChild = newChild;
     }
 }
+
+static TreeElement* deleteElementStatic(TreeElement* node, const char* key)
+{
+    if (node == NULL)
+    {
+        return;
+    }
+    int compare = strcmp(key, node->key);
+    if (compare > 0)
+    {
+        node->rightChild = deleteElementStatic(node->rightChild, key);
+    }
+    else if (compare < 0)
+    {
+        node->leftChild = deleteElementStatic(node->leftChild, key);
+    }
+    else
+    {
+        node = deleteNode(node);
+    }
+    if (node == NULL)
+    {
+        return node;
+    }
+    updateHeight(node);
+    node = balance(node);
+    return node;
+}
+
+bool deleteElement(Tree* const tree, const char* key)
+{
+    if (tree == NULL)
+    {
+        return true;
+    }
+    tree->root = deleteElementStatic(tree->root, key);
+    return false;
+}
+
 
 int delete(Tree* const tree, const int key)
 {
