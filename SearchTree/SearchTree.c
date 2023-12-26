@@ -55,6 +55,7 @@ int add(Tree* const tree, const int key, const char* const value)
         TreeElement* newElement = (TreeElement*)calloc(1, sizeof(TreeElement));
         if (newElement == NULL)
         {
+            free(valueCopy);
             return memoryError;
         }
         newElement->key = key;
@@ -72,6 +73,7 @@ int add(Tree* const tree, const int key, const char* const value)
     TreeElement* newElement = (TreeElement*)calloc(1, sizeof(TreeElement));
     if (newElement == NULL)
     {
+        free(valueCopy);
         return memoryError;
     }
     newElement->key = key;
