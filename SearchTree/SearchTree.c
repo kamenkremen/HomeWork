@@ -109,22 +109,6 @@ char* get(const Tree* const tree, const int key)
     return staticGet(tree->root, key);
 }
 
-static void setChild(Tree* const tree, TreeElement* const parent, const int key, const TreeElement* const newChild)
-{
-    if (parent == NULL)
-    {
-        tree->root = newChild;
-        return;
-    }
-    if (key < parent->key)
-    {
-        parent->leftChild = newChild;
-    }
-    else
-    {
-        parent->rightChild = newChild;
-    }
-}
 static TreeElement* deleteNode(const TreeElement* const node)
 {
     if (node == NULL)
