@@ -9,4 +9,5 @@ enum ERRORCODES
     division0Error,
     fileError,
     treeBuildingError,
+    nullDivisionError,
 };

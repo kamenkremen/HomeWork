@@ -33,10 +33,10 @@ int main(void)
     }
     printf("Expression in infix form:\n");
     printTree(tree);
-    int result = calculate(tree, &errorCode);
+    const int result = calculate(tree, &errorCode);
     if (errorCode != ok)
     {
-        printf("NULL POINTER ERROR\n");
+        printf("ERROR IN CALCULATION\n");
         return finish(&tree, errorCode);
     }
     printf("Result of the expression: %d\n", result);

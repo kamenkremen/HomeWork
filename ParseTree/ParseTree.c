@@ -2,6 +2,7 @@
 #include <stdbool.h>
 #include <stdlib.h>
 #include <string.h>
+#include <ctype.h>
 
 #include "ParseTree.h"
 #include "ErrorCodes.h"
@@ -26,18 +27,12 @@ static void deleteSubTree(Node* const node)
     {
         return;
     }
-    if (node->rightChild != NULL)
-    {
-        deleteSubTree(node->rightChild);
-    }
-    if (node->leftChild != NULL)
-    {
-        deleteSubTree(node->leftChild);
-    }
+    deleteSubTree(node->rightChild);
+    deleteSubTree(node->leftChild);
     free(node);
 }
 
-static bool isOperand(const char symbol)
+static bool isOperation(const char symbol)
 {
     return symbol == '+' || symbol == '-' || symbol == '*' || symbol == '/';
 }
@@ -45,7 +40,7 @@ static bool isOperand(const char symbol)
 static int getNumber(const char* const expression, size_t* const index, const size_t length)
 {
     int number = 0;
-    for (; *index < length && expression[*index] >= '0' && expression[*index] <= '9'; ++(*index))
+    for (; *index < length && (bool)isdigit(expression[*index]); ++(*index))
     {
         number = number * 10 + (int)expression[*index] - (int)'0';
     }
@@ -64,7 +59,7 @@ static Node* createNode(const char* const expression, size_t* const index, const
     {
         return NULL;
     }
-    if (isOperand(expression[*index]))
+    if (isOperation(expression[*index]))
     {
         if (expression[*index] == '-' && expression[*index + 1] != ' ')
         {
@@ -100,21 +95,22 @@ static bool isCorrect(const char* const expression, const size_t length)
 {
     for (size_t i = 0; i < length; ++i)
     {
-        if (expression[i] == '(')
+        const char currentChar = expression[i];
+        if (currentChar == '(')
         {
-            if (i == length || !isOperand(expression[i + 1]))
+            if (i == length || !isOperation(expression[i + 1]))
             {
                 return false;
             }
         }
-        if (isOperand(expression[i]))
+        if (isOperation(expression[i]))
         {
             if (i == 0 || expression[i - 1] != '(')
             {
                 return false;
             }
         }
-        else if (expression[i] != ' ' && expression[i] != '(' && expression[i] != ')' && (expression[i] < '0' || expression[i] > '9'))
+        else if (currentChar != ' ' && currentChar != '(' && currentChar != ')' && !(bool)isdigit(currentChar))
         {
             return false;
         }
@@ -143,7 +139,6 @@ ParseTree* build(const char* const expression)
     if (index + 1 < length)
     {
         deleteParseTree(&tree);
-        tree = NULL;
     }
     return tree;
 }
@@ -176,9 +171,10 @@ void deleteParseTree(ParseTree** const tree)
 {
     deleteSubTree((*tree)->root);
     free(*tree);
+    *tree = NULL;
 }
 
-static int proceedOperation(const int first, const int second, const char operation)
+static int proceedOperation(const int first, const int second, const char operation, int* const errorCode)
 {
     switch (operation)
     {
@@ -189,20 +185,43 @@ static int proceedOperation(const int first, const int second, const char operat
         case'*':
             return first * second;
         case '/':
+            if (second == 0)
+            {
+                *errorCode = nullDivisionError;
+                return 0;
+            }
             return first / second;
         default:
             return 0;
     }
 }
 
-static int calculateSubtree(const Node* const node)
+static int calculateSubtree(const Node* const node, int* const errorCode)
 {
     if (node == NULL)
     {
         return 0;
     }
-    return node->isOperation ? proceedOperation(calculateSubtree(node->leftChild), 
-        calculateSubtree(node->rightChild), (char)node->value) : node->value;
+    if (!node->isOperation)
+    {
+        return node->value;
+    }
+    const int leftResult = calculateSubtree(node->leftChild, errorCode);
+    if (*errorCode != ok)
+    {
+        return 0;
+    }
+    const int rightResult = calculateSubtree(node->rightChild, errorCode);
+    if (*errorCode != ok)
+    {
+        return 0;
+    }
+    const int result = proceedOperation(leftResult, rightResult, (char)node->value, errorCode);
+    if (*errorCode != ok)
+    {
+        return 0;
+    }
+    return result;
 }
 
 int calculate(const ParseTree* const tree, int* const errorCode)
@@ -210,11 +229,11 @@ int calculate(const ParseTree* const tree, int* const errorCode)
     if (tree == NULL)
     {
         *errorCode = nullPointerError;
-        return nullPointerError;
+        return 0;
     }
     if (tree->root == NULL)
     {
         return 0;
     }
-    return calculateSubtree(tree->root);
+    return calculateSubtree(tree->root, errorCode);
 }
