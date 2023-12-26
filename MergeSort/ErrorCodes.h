@@ -1,10 +1,10 @@
 #pragma once
 enum ERRORCODES
 {
-	ok,
-	memoryError,
-	nullPtrError,
-	noSuchElement,
-	fileError,
-	inputError,
+    ok,
+    memoryError,
+    nullPtrError,
+    noSuchElement,
+    fileError,
+    inputError,
 };

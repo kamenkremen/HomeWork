@@ -2,184 +2,129 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include "list.h"
-#include "ListOfLists.h"
+#include "ListQueue.h"
 #include <string.h>
 #include "ErrorCodes.h"
 
-static List* merge(const List* const first, const List* const second, const bool sortByName, int* errorCode)
+static List* merge(const List* const first, const List* const second, const bool sortByName, int* const errorCode)
 {
-	List* newList = createList();
-	if (newList == NULL)
-	{
-		*errorCode = memoryError;
-		deleteList(&newList);
-		return;
-	}
-	size_t i = 0;
-	size_t j = 0;
-	while (i < getSize(first) || j < getSize(second))
-	{
-		if (i >= getSize(first))
-		{
-			int errorCode2 = 0;
-			ListValue value = getElement(second, j, &errorCode2);
-			if (errorCode2 != ok)
-			{
-				*errorCode = errorCode2;
-				deleteList(&newList);
-				return;
-			}
-			if (addElement(newList, value) != ok)
-			{
-				*errorCode = memoryError;
-				deleteList(&newList);
-				return;
-			}
-			++j;
-			continue;
-		}
-		if (j >= getSize(second))
-		{
-			int errorCode2 = 0;
-			ListValue value = getElement(first, i, &errorCode2);
-			if (errorCode2 != ok)
-			{
-				*errorCode = errorCode2;
-				deleteList(&newList);
-				return;
-			}
-			if (addElement(newList, value) != ok)
-			{
-				*errorCode = memoryError;
-				deleteList(&newList);
-				return;
-			}
-			++i;
-			continue;
-		}
-		int errorCode2 = 0;
-		ListValue firstValue = getElement(first, i, &errorCode2);
-		if (errorCode2 != ok)
-		{
-			*errorCode = errorCode2;
-			deleteList(&newList);
-			return;
-		}
-		ListValue secondValue = getElement(second, j, &errorCode2);
-		if (errorCode2 != ok)
-		{
-			*errorCode = errorCode2;
-			deleteList(&newList);
-			return;
-		}
-		char* firstValueToSort = 0;
-		char* secondValueToSort = 0;
-		if (sortByName)
-		{
-			firstValueToSort = firstValue.name;
-			secondValueToSort = secondValue.name;
-		}
-		else
-		{
-			firstValueToSort = firstValue.number;
-			secondValueToSort = secondValue.number;
-		}
-		if (strcmp(firstValueToSort, secondValueToSort) > 0)
-		{
-			if (addElement(newList, secondValue) != ok)
-			{
-				*errorCode = memoryError;
-				deleteList(&newList);
-				return;
-			}
-			++j;
-		}
-		else
-		{
-			if (addElement(newList, firstValue) != ok)
-			{
-				*errorCode = memoryError;
-				deleteList(&newList);
-				return;
-			}
-			++i;
-		}
-	}
-	return newList;
+    List* newList = createList();
+    if (newList == NULL)
+    {
+        *errorCode = memoryError;
+        return NULL;
+    }
+    size_t i = 0;
+    size_t j = 0;
+    while (getSize(first) + getSize(second) > 0)
+    {
+        ListValue firstValue = getElement(first, 0, errorCode);
+        if (*errorCode != ok)
+        {
+            deleteList(&newList);
+            return;
+        }
+        ListValue secondValue = getElement(second, 0, errorCode);
+        if (*errorCode != ok)
+        {
+            deleteList(&newList);
+            return;
+        }
+        char* firstValueToSort = (sortByName ? firstValue.name : firstValue.number);
+        char* secondValueToSort = (sortByName ? secondValue.name : secondValue.number);
+        bool comparator = false;
+        if (getSize(first) > 0 && getSize(second) > 0)
+        {
+            comparator = strcmp(firstValueToSort, secondValueToSort) < 0;
+        }
+        else if (getSize(first) == 0)
+        {
+            comparator = true;
+        }
+        else
+        {
+            comparator = false;
+        }
+        *errorCode = moveHead(comparator ? second : first, newList);
+        if (*errorCode)
+        {
+            deleteList(&newList);
+            return NULL;
+        }
+    }
+    return newList;
 }
 
-static void sort(ListOfLists* const list, const bool sortByName, int* mainErrorCode)
+static void sort(ListQueue* const list, const bool sortByName, int* mainErrorCode)
 {
-	int errorCode = 0;
-	while (getSizeOfListOfLists(list) > 1)
-	{
-		List* firstList = getList(list, 0, &errorCode);
-		if (errorCode != ok)
-		{
-			*mainErrorCode = errorCode;
-			return;
-		}
-		List* secondList = getList(list, 1, &errorCode);
-		if (errorCode != ok)
-		{
-			*mainErrorCode = errorCode;
-			return;
-		}
-		deleteListFromListOfLists(list, 0);
-		deleteListFromListOfLists(list, 0);
-		List* newList = merge(firstList, secondList, sortByName, &errorCode);
-		if (errorCode != ok)
-		{
-			deleteList(&newList);
-			*mainErrorCode = errorCode;
-			return;
-		}
-		if (addList(list, newList) != ok)
-		{
-			deleteList(&newList);
-			*mainErrorCode = memoryError;
-			return;
-		}
-	}
+    int errorCode = 0;
+    while (getSizeOfListQueue(list) > 1)
+    {
+        List* firstList = getList(list, 0, &errorCode);
+        if (errorCode != ok)
+        {
+            *mainErrorCode = errorCode;
+            return;
+        }
+        List* secondList = getList(list, 1, &errorCode);
+        if (errorCode != ok)
+        {
+            *mainErrorCode = errorCode;
+            return;
+        }
+        dequeue(queue);
+        dequeue(queue);
+        List* newList = merge(firstList, secondList, sortByName, &errorCode);
+        if (errorCode != ok)
+        {
+            deleteList(&newList);
+            *mainErrorCode = errorCode;
+            return;
+        }
+        if (addList(list, newList) != ok)
+        {
+            deleteList(&newList);
+            *mainErrorCode = memoryError;
+            return;
+        }
+    }
 }
-
-
 
 void mergeSort(List** const list, const bool sortByName, int* mainErrorCode)
 {
-	ListOfLists* listOfLists = createListOfLists();
-	if (listOfLists == NULL)
-	{
-		return memoryError;
-	}
-	int errorCode = 0;
-	for (size_t i = 0; i < getSize(*list); ++i)
-	{
-		List* listElement = createList();
-		if (listElement == NULL)
-		{
-			return memoryError;
-		}
-		ListValue value = getElement(*list, i, &errorCode);
-		if (errorCode != ok)
-		{
-			return errorCode;
-		}
-		addElement(listElement, value);
-		addList(listOfLists, listElement);
-	}
+    ListQueue* ListQueue = createListQueue();
+    if (ListQueue == NULL)
+    {
+        return memoryError;
+    }
+    int errorCode = 0;
+    for (size_t i = 0; i < getSize(*list); ++i)
+    {
+        List* listElement = createList();
+        if (listElement == NULL)
+        {
+            return memoryError;
+        }
+        ListValue value = getElement(*list, i, &errorCode);
+        if (errorCode != ok)
+        {
+            return errorCode;
+        }
+        addElement(listElement, value);
+        addList(ListQueue, listElement);
+    }
 
-	sort(listOfLists, sortByName, &errorCode);
-	if (errorCode != ok)
-	{
-		*mainErrorCode = errorCode;
-		return;
-	}
-	*list = getList(listOfLists, 0, &errorCode);
-	if (errorCode != ok)
-	{
-		*list = NULL;
-		*mainErrorCode = errorCode;
-		return;
-	}
+    sort(ListQueue, sortByName, &errorCode);
+    if (errorCode != ok)
+    {
+        *mainErrorCode = errorCode;
+        return;
+    }
+    *list = getList(ListQueue, 0, &errorCode);
+    if (errorCode != ok)
+    {
+        *list = NULL;
+        *mainErrorCode = errorCode;
+        return;
+    }
 }

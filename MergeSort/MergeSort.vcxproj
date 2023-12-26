@@ -128,14 +128,14 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="list.c" />
-    <ClCompile Include="ListOfLists.c" />
+    <ClCompile Include="ListQueue.c" />
     <ClCompile Include="main.c" />
     <ClCompile Include="MergeSort.c" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="ErrorCodes.h" />
     <ClInclude Include="list.h" />
-    <ClInclude Include="ListOfLists.h" />
+    <ClInclude Include="ListQueue.h" />
     <ClInclude Include="MergeSort.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
