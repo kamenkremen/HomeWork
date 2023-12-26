@@ -18,8 +18,6 @@ char* ERRORNAMES[5] = {
     "Input error",
 };
 
-
-
 enum Operations
 {
     exitOperation,
