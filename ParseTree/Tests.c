@@ -10,19 +10,24 @@
 static int testFileReading(void)
 {
     char* test1 = read("test.txt");
-    if (strcmp(test1, "(* (+ 1 1) 2)") != 0)
+    if (test1 = NULL || strcmp(test1, "(* (+ 1 1) 2)") != 0)
     {
         return 1;
     }
     char* test2 = read("test2.txt");
-    if (strcmp(test2, "(- (+ (/ (* 3 2) 2) 8) 1234)") != 0)
+    if (test2 == NULL || strcmp(test2, "(- (+ (/ (* 3 2) 2) 8) 1234)") != 0)
     {
         return 2;
     }
     char* test3 = read("test3.txt");
-    if (strcmp(test3, "") != 0)
+    if (test3 == NULL || strcmp(test3, "") != 0)
     {
         return 3;
+    }
+    char* test4 = read("test4.txt");
+    if (test4 == NULL || strcmp(test4, "(* (1 + 1) 2)") != 0)
+    {
+        return 4;
     }
     return ok;
 }
@@ -52,21 +57,30 @@ static int testParseTree(void)
         return 4;
     }
     deleteParseTree(&tree2);
+    ParseTree* tree3 = build(read("test4.txt"));
+    if (tree3 != NULL)
+    {
+        deleteParseTree(tree3);
+        return 5;
+    }
     return ok;
 }
 
 
-int tests(void)
+bool tests(void)
 {
     int errorCode = testFileReading();
+    bool isError = false;
     if (errorCode != ok)
     {
-        return 10 + errorCode;
+        isError = true;
+        printf("ERROR IN FILE READING TESTS, CASE %d\n", errorCode);
     }
     errorCode = testParseTree();
     if (errorCode != ok)
     {
-        return 20 + errorCode;
+        isError = true;
+        printf("ERROR IN PARSE TREE TESTS, CASE %d\n", errorCode);
     }
-    return ok;
+    return isError;
 }

@@ -20,32 +20,24 @@ char* read(const char* const fileName)
         return NULL;
     }
     char symbol = getc(file);
-    while (symbol != "\n" && symbol != EOF)
+    for (;symbol != '\n' && symbol != EOF; symbol = getc(file))
     {
-        if (length >= capacity)
+        if (length + 1 >= capacity)
         {
             capacity *= 2;
-            string = realloc(string, capacity);
-            if (string == NULL)
+            char* buffer = (char*)realloc(string, capacity);
+            if (buffer == NULL)
             {
+                free(string);
                 fclose(file);
                 return NULL;
             }
+            string = buffer;
         }
         string[length] = symbol;
         ++length;
-        symbol = getc(file);
     }
     fclose(file);
-    if (length >= capacity)
-    {
-        ++capacity;
-        string = realloc(&string, capacity);
-        if (string == NULL)
-        {
-            return NULL;
-        }
-    }
     string[length] = '\0';
     return string;
 }

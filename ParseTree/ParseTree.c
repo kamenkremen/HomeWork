@@ -8,8 +8,8 @@
 
 typedef struct Node
 {
-    char operation;
-    int number;
+    bool isOperation;
+    int value;
     struct Node* leftChild;
     struct Node* rightChild;
 } Node;
@@ -20,25 +20,45 @@ struct ParseTree
     Node* root;
 };
 
-bool isOperand(const char symbol)
+static void deleteSubTree(Node* const node)
+{
+    if (node == NULL)
+    {
+        return;
+    }
+    if (node->rightChild != NULL)
+    {
+        deleteSubTree(node->rightChild);
+    }
+    if (node->leftChild != NULL)
+    {
+        deleteSubTree(node->leftChild);
+    }
+    free(node);
+}
+
+static bool isOperand(const char symbol)
 {
     return symbol == '+' || symbol == '-' || symbol == '*' || symbol == '/';
 }
 
-static getNumber(const char* expression, size_t* index)
+static int getNumber(const char* const expression, size_t* const index, const size_t length)
 {
     int number = 0;
-    for (; *index < strlen(expression) && expression[*index] >= '0' && expression[*index] <= '9'; ++(*index))
+    for (; *index < length && expression[*index] >= '0' && expression[*index] <= '9'; ++(*index))
     {
-        number = number * 10 + expression[*index] - '0';
+        number = number * 10 + (int)expression[*index] - (int)'0';
     }
     return number;
 }
 
-static Node* createNode(const char* const expression, size_t* index)
+static Node* createNode(const char* const expression, size_t* const index, const size_t length)
 {
-    ++(*index);
-    for (; *index < strlen(expression) && (expression[*index] == ' ' || expression[*index] == '(' || expression[*index] == ')'); ++(*index));
+    for (; *index < length && (expression[*index] == ' ' || expression[*index] == '(' || expression[*index] == ')'); ++(*index));
+    if (*index == length)
+    {
+        return NULL;
+    }
     Node* newNode = (Node*)calloc(1, sizeof(Node));
     if (newNode == NULL)
     {
@@ -49,47 +69,97 @@ static Node* createNode(const char* const expression, size_t* index)
         if (expression[*index] == '-' && expression[*index + 1] != ' ')
         {
             ++(*index);
-            newNode->number = -getNumber(expression, index);
+            newNode->value = -getNumber(expression, index, length);
             return newNode;
         }
-        newNode->operation = expression[*index];
-        newNode->leftChild = createNode(expression, index);
-        newNode->rightChild = createNode(expression, index);
+        newNode->isOperation = true;
+        newNode->value = (int)expression[*index];
+        ++(*index);
+        newNode->leftChild = createNode(expression, index, length);
+        if (newNode->leftChild == NULL)
+        {
+            free(newNode);
+            return NULL;
+        }
+        ++(*index);
+        newNode->rightChild = createNode(expression, index, length);
+        if (newNode->rightChild == NULL)
+        {
+            deleteSubTree(newNode);
+            return NULL;
+        }
     }
     else
     {
-        newNode->number = getNumber(expression, index);
+        newNode->value = getNumber(expression, index, length);
     }
     return newNode;
 }
 
+static bool isCorrect(const char* const expression, const size_t length)
+{
+    for (size_t i = 0; i < length; ++i)
+    {
+        if (expression[i] == '(')
+        {
+            if (i == length || !isOperand(expression[i + 1]))
+            {
+                return false;
+            }
+        }
+        if (isOperand(expression[i]))
+        {
+            if (i == 0 || expression[i - 1] != '(')
+            {
+                return false;
+            }
+        }
+        else if (expression[i] != ' ' && expression[i] != '(' && expression[i] != ')' && (expression[i] < '0' || expression[i] > '9'))
+        {
+            return false;
+        }
+    }
+    return true;
+}
+
 ParseTree* build(const char* const expression)
 {
+    if (expression == NULL)
+    {
+        return NULL;
+    }
+    const size_t length = strlen(expression);
+    if (!isCorrect(expression, length))
+    {
+        return NULL;
+    }
     ParseTree* tree = (ParseTree*)calloc(1, sizeof(ParseTree));
     if (tree == NULL)
     {
         return NULL;
     }
     size_t index = 0;
-    tree->root = createNode(expression, &index);
+    tree->root = createNode(expression, &index, length);
+    if (index + 1 < length)
+    {
+        deleteParseTree(&tree);
+        tree = NULL;
+    }
     return tree;
 }
 
 static void printNode(const Node* const node)
 {
-    if (node == NULL)
-    {
-        return;
-    }
     if (node->leftChild == NULL && node->rightChild == NULL)
     {
-        printf("%d ", node->number);
-        
+        printf("%d", node->value);
         return;
     }
-    printf("%c ", node->operation);
+    printf("(%c ", (char)node->value);
     printNode(node->leftChild);
+    printf(" ");
     printNode(node->rightChild);
+    printf(")");
 }
 
 void printTree(const ParseTree* const tree)
@@ -102,28 +172,9 @@ void printTree(const ParseTree* const tree)
     printf("\n");
 }
 
-static void deleteChilds(Node* const node)
-{
-    if (node == NULL)
-    {
-        return;
-    }
-    if (node->rightChild != NULL)
-    {
-        deleteChilds(node->rightChild);
-        free(node->rightChild);
-    }
-    if (node->leftChild != NULL)
-    {
-        deleteChilds(node->leftChild);
-        free(node->leftChild);
-    }
-}
-
 void deleteParseTree(ParseTree** const tree)
 {
-    deleteChilds((*tree)->root);
-    free((*tree)->root);
+    deleteSubTree((*tree)->root);
     free(*tree);
 }
 
@@ -139,6 +190,8 @@ static int proceedOperation(const int first, const int second, const char operat
             return first * second;
         case '/':
             return first / second;
+        default:
+            return 0;
     }
 }
 
@@ -148,8 +201,8 @@ static int calculateSubtree(const Node* const node)
     {
         return 0;
     }
-    return node->rightChild != NULL || node->leftChild != NULL ? proceedOperation(calculateSubtree(node->leftChild), 
-        calculateSubtree(node->rightChild), node->operation) : node->number;
+    return node->isOperation ? proceedOperation(calculateSubtree(node->leftChild), 
+        calculateSubtree(node->rightChild), (char)node->value) : node->value;
 }
 
 int calculate(const ParseTree* const tree, int* const errorCode)

@@ -1,3 +1,6 @@
 #pragma once
+
+#include <stdbool.h>
+
 // Test file reading and parse tree
-int tests(void);
+bool tests(void);

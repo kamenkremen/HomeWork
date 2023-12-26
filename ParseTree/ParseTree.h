@@ -13,4 +13,4 @@ void printTree(const ParseTree* const tree);
 int calculate(const ParseTree* const tree, int* const errorCode);
 
 // Delete tree
-void deleteParseTree(ParseTree** tree);
+void deleteParseTree(ParseTree** const tree);

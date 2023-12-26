@@ -6,14 +6,7 @@
 #include "Tests.h"
 #include "ErrorCodes.h"
 
-char* TEST_ERROCODES[3] =
-{
-    "",
-    "FILE READING TEST",
-    "PARSE TREE TEST",
-};
-
-int finish(ParseTree** const tree, const int errorCode)
+static int finish(ParseTree** const tree, const int errorCode)
 {
     deleteParseTree(tree);
     return errorCode;
@@ -24,7 +17,6 @@ int main(void)
     int errorCode = tests();
     if (errorCode != ok)
     {
-        printf("ERROR IN %s, CASE %d\n", TEST_ERROCODES[errorCode / 10], errorCode % 10);
         return errorCode;
     }
     char* string = read("input.txt");
@@ -36,8 +28,8 @@ int main(void)
     ParseTree* tree = build(string);
     if (tree == NULL)
     {
-        printf("MEMORY ERROR\n");
-        return finish(&tree, errorCode);
+        printf("TREE BUILDING ERROR\n");
+        return finish(&tree, treeBuildingError);
     }
     printf("Expression in infix form:\n");
     printTree(tree);

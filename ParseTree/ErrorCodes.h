@@ -8,4 +8,5 @@ enum ERRORCODES
     nullPointerError,
     division0Error,
     fileError,
+    treeBuildingError,
 };
