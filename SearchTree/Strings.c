@@ -16,7 +16,7 @@ char* readLine(void)
     size_t length = 0;
     while ((symbol = getchar()) != '\n')
     {
-        if (length >= capacity)
+        if (length + 1 >= capacity)
         {
             capacity *= 2;
             const char* const buffer = (char*)realloc(string, capacity);
@@ -29,17 +29,6 @@ char* readLine(void)
         }
         string[length] = symbol;
         ++length;
-    }
-    if (length >= capacity)
-    {
-        ++capacity;
-        const char* const buffer = (char*)realloc(string, capacity);
-        if (buffer == NULL)
-        {
-            free(string);
-            return NULL;
-        }
-        string = buffer;
     }
     string[length] = '\0';
     return string;

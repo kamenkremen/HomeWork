@@ -45,20 +45,20 @@ int add(Tree* const tree, const int key, const char* const value)
         return nullPointerError;
     }
     TreeElement* current = tree->root;
-    TreeElement* newElement = (TreeElement*)calloc(1, sizeof(TreeElement));
-    if (newElement == NULL)
+    const char* const valueCopy = stringCopy(value);
+    if (valueCopy == NULL)
     {
-        return memoryError;
-    }
-    newElement->key = key;
-    newElement->value = stringCopy(value);
-    if (newElement->value == NULL)
-    {
-        free(newElement);
         return memoryError;
     }
     if (current == NULL)
     {
+        TreeElement* newElement = (TreeElement*)calloc(1, sizeof(TreeElement));
+        if (newElement == NULL)
+        {
+            return memoryError;
+        }
+        newElement->key = key;
+        newElement->value = valueCopy;
         tree->root = newElement;
         return ok;
     }
@@ -66,13 +66,17 @@ int add(Tree* const tree, const int key, const char* const value)
     if (key == current->key)
     {
         free(current->value);
-        current->value = stringCopy(value);
-        if (current->value == NULL) {
-            freeNode(newElement);
-            return memoryError;
-        }
+        current->value = valueCopy;
+        return ok;
     }
-    else if (key > current->key)
+    TreeElement* newElement = (TreeElement*)calloc(1, sizeof(TreeElement));
+    if (newElement == NULL)
+    {
+        return memoryError;
+    }
+    newElement->key = key;
+    newElement->value = valueCopy;
+    if (key > current->key)
     {
         current->rightChild = newElement;
     }
@@ -130,7 +134,10 @@ static TreeElement* deleteNode(const TreeElement* const node)
     }
     TreeElement* previous = node;
     TreeElement* current = node->rightChild;
-    for (; current->leftChild != NULL; previous = current, current = current->leftChild);
+    for (; current->leftChild != NULL; current = current->leftChild)
+    {
+        previous = current;
+    }
     previous->leftChild = current->rightChild;
     current->rightChild = node->rightChild;
     current->leftChild = node->leftChild;
@@ -194,4 +201,5 @@ void deleteTree(Tree** const tree)
         deleteNodes(((*tree)->root));
     }
     free(*tree);
+    *tree = NULL;
 }
