@@ -56,13 +56,7 @@ TableError addToTable(Table* const table, const char* const value)
             return memoryError;
         }
     }
-    const char* const valueCopy = (char*)calloc(strlen(value), sizeof(char));
-    if (valueCopy == NULL)
-    {
-        return memoryError;
-    }
-    strcpy_s(valueCopy, strlen(value) + 1, value);
-    return addWord(table->hashes[hashWord], valueCopy);
+    return addWord(table->hashes[hashWord], value);
 }
 
 float loadFactor(const Table* const table, TableError* const errorCode)

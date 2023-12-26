@@ -91,17 +91,14 @@ char** getWords(const char* const string, size_t* const size, StringError* const
                     words[j] = NULL;
                 }
             }
-            word = (char*)calloc(i - previousSpace + 1, sizeof(char));
+            word = (char*)calloc(i - previousSpace, sizeof(char));
             if (word == NULL)
             {
                 deleteWords(&words, currentWord);
                 *errorCode = memoryError;
                 return NULL;
             }
-            for (size_t j = 0; j < i - previousSpace - 1; ++j)
-            {
-                word[j] = string[j + previousSpace + 1];
-            }
+            memcpy(word, string + previousSpace + 1, i - previousSpace - 1);
             words[currentWord] = word;
             ++currentWord;
             previousSpace = i;

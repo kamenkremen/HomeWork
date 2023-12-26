@@ -39,6 +39,7 @@ void deleteList(List** const list)
     while ((*list)->head != NULL)
     {
         ListElement* nextElement = (*list)->head->next;
+        free((*list)->head->value);
         free((*list)->head);
         (*list)->head = nextElement;
     }
@@ -54,7 +55,7 @@ bool isContains(const List* const list, ListValue value)
 {
     ListElement* current = list->head;
     for (; current != NULL && strcmp(current->value, value) != 0; current = current->next);
-    return (current != NULL);
+    return current != NULL;
 }
 
 ListError addWord(List* const list, ListValue value)
@@ -73,7 +74,18 @@ ListError addWord(List* const list, ListValue value)
         {
             return memoryError;
         }
-        newElement->value = value;
+        newElement->value = (char*)calloc(strlen(value) + 1, sizeof(char));
+        if (newElement->value == NULL)
+        {
+            free(newElement);
+            return memoryError;
+        }
+        strcpy_s(newElement->value, strlen(value) + 1, value);
+        if (newElement->value == NULL)
+        {
+            free(newElement);
+            return memoryError;
+        }
         newElement->amount = 1;
         if (previous == NULL)
         {

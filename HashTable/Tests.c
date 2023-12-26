@@ -1,5 +1,6 @@
 #include <stdlib.h>
 #include <time.h>
+#include <string.h>
 
 #include "Tests.h"
 #include "HashTable.h"
@@ -33,6 +34,43 @@ static char* generateWord(void)
     }
     word[size - 1] = '/0';
     return word;
+}
+
+static int hashTableLoadTest(void)
+{
+    Table* table = createTable(100000);
+    clock_t before = clock();
+    for (size_t i = 0; i < AMOUNT_OF_WORDS; ++i)
+    {
+        char* word = generateWord();
+        if (word == NULL)
+        {
+            return finish(&table, 1);
+        }
+        char* wordCopy = (char*)calloc(strlen(word) + 1, sizeof(char));
+        if (wordCopy == NULL)
+        {
+            return finish(&table, 1);
+        }
+        strcpy_s(wordCopy, strlen(word) + 1, word);
+        if (wordCopy == NULL)
+        {
+            return finish(&table, 1);
+        }
+        free(word);
+        int errorCode = addToTable(table, wordCopy);
+        if (errorCode != ok)
+        {
+            return finish(&table, 1);
+        }
+    }
+    clock_t after = clock();
+    double duration = (double)(after - before) / CLOCKS_PER_SEC;
+    if (duration > MAX_DURATION)
+    {
+        return finish(&table, 2);
+    }
+    return ok;
 }
 
 static int testHashTable(void)
@@ -72,37 +110,21 @@ static int testHashTable(void)
     {
         return finish(&table, 5);
     }
-    deleteTable(&table);
-    table = createTable(100000);
-    clock_t before = clock();
-    for (size_t i = 0; i < AMOUNT_OF_WORDS; ++i)
-    {
-        char* word = generateWord();
-        if (word == NULL)
-        {
-            return finish(&table, 6);
-        }
-        errorCode = addToTable(table, word);
-        if (errorCode != ok)
-        {
-            return finish(&table, 6);
-        }
-    }
-    clock_t after = clock();
-    double duration = (double)(after - before) / CLOCKS_PER_SEC;
-    if (duration > MAX_DURATION)
-    {
-        return finish(&table, 7);
-    }
     return finish(&table, ok);
 }
 
 int tests(void)
 {
-    const int errorCode = testHashTable();
+    srand(time(NULL));
+    int errorCode = testHashTable();
     if (errorCode != ok)
     {
-        printf("ERROR IN HASH TABLE TEST, CASE %d", errorCode);
+        printf("ERROR IN HASH TABLE TEST, CASE %d\n", errorCode);
+    }
+    if (hashTableLoadTest() != ok)
+    {
+        printf("HASH TABLE IS TOO SLOW\n");
+        errorCode = 2;
     }
     return errorCode;
 }

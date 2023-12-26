@@ -6,10 +6,21 @@
 #include "List.h"
 #include "ErrorCodes.h"
 #include "Strings.h"
-//#include "Tests.h"
+#include "Tests.h"
 
 #define HASH_SIZE 293
 #define MEMORY_ERROR_MESSAGE "MEMORY ERROR\n"
+
+static int finish(Table** const table, char*** const words, const size_t size, const int returnValue)
+{
+    if (returnValue != ok)
+    {
+        printf("%s\n", MEMORY_ERROR_MESSAGE);
+    }
+    deleteTable(table);
+    deleteWords(words, size);
+    return returnValue;
+}
 
 int main(void)
 {
@@ -42,20 +53,25 @@ int main(void)
     }
     for (size_t i = 0; i < size; ++i)
     {
+        char* wordCopy = (char*)calloc(strlen(words[i]) + 1, sizeof(char));
+        if (wordCopy == NULL)
+        {
+            return finish(&table, &words, size, memoryError);
+        }
+        strcpy_s(wordCopy, strlen(words[i]) + 1, words[i]);
+        if (wordCopy == NULL)
+        {
+            return finish(&table, &words, size, memoryError);
+        }
         errorCode = addToTable(table, words[i]);
         if (errorCode != ok)
         {
-            printf(MEMORY_ERROR_MESSAGE);
-            deleteWords(&words, size);
-            deleteTable(&table);
-            return memoryError;
+            return finish(&table, &words, size, memoryError);
         }
     }
     printTable(table);
     printf("Average list length - %f\n", averageListLength(table, &errorCode));
     printf("Maximum list length - %zu\n", maxListLength(table, &errorCode));
     printf("Load factor - %f\n", loadFactor(table, &errorCode));
-    deleteTable(&table);
-    deleteWords(&words, size);
-    return ok;
+    return finish(&table, &words, size, ok);
 }
