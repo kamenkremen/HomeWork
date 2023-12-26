@@ -74,18 +74,7 @@ ListError addWord(List* const list, ListValue value)
         {
             return memoryError;
         }
-        newElement->value = (char*)calloc(strlen(value) + 1, sizeof(char));
-        if (newElement->value == NULL)
-        {
-            free(newElement);
-            return memoryError;
-        }
-        strcpy_s(newElement->value, strlen(value) + 1, value);
-        if (newElement->value == NULL)
-        {
-            free(newElement);
-            return memoryError;
-        }
+        newElement->value = value;
         newElement->amount = 1;
         if (previous == NULL)
         {
@@ -100,6 +89,7 @@ ListError addWord(List* const list, ListValue value)
     else
     {
         ++current->amount;
+        free(value);
     }
     return ok;
 }

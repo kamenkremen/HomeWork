@@ -63,7 +63,7 @@ int main(void)
         {
             return finish(&table, &words, size, memoryError);
         }
-        errorCode = addToTable(table, words[i]);
+        errorCode = addToTable(table, wordCopy);
         if (errorCode != ok)
         {
             return finish(&table, &words, size, memoryError);

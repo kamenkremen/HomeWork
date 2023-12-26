@@ -47,18 +47,7 @@ static int hashTableLoadTest(void)
         {
             return finish(&table, 1);
         }
-        char* wordCopy = (char*)calloc(strlen(word) + 1, sizeof(char));
-        if (wordCopy == NULL)
-        {
-            return finish(&table, 1);
-        }
-        strcpy_s(wordCopy, strlen(word) + 1, word);
-        if (wordCopy == NULL)
-        {
-            return finish(&table, 1);
-        }
-        free(word);
-        int errorCode = addToTable(table, wordCopy);
+        int errorCode = addToTable(table, word);
         if (errorCode != ok)
         {
             return finish(&table, 1);
@@ -97,7 +86,21 @@ static int testHashTable(void)
     }
     for (size_t i = 0; i < size; ++i)
     {
-        errorCode = addToTable(table, words[i]);
+        char* wordCopy = (char*)calloc(strlen(words[i]) + 1, sizeof(char));
+        if (wordCopy == NULL)
+        {
+            deleteWords(&words, size);
+            deleteTable(&table);
+            return 4;
+        }
+        strcpy_s(wordCopy, strlen(words[i]) + 1, words[i]);
+        if (wordCopy == NULL)
+        {
+            deleteWords(&words, size);
+            deleteTable(&table);
+            return 4;
+        }
+        errorCode = addToTable(table, wordCopy);
         if (errorCode != ok)
         {
             deleteWords(&words, size);
