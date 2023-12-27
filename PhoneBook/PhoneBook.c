@@ -39,6 +39,59 @@ static void freeData(char** const numbers, char** const names, const size_t size
     }
 }
 
+static bool addToBook(char** const numbers, char** const names, const size_t size, size_t* const newRecordings)
+{
+    readLine();
+    printf("Enter number:\n");
+    const char* const number = readLine();
+    if (number == NULL)
+    {
+        freeData(numbers, names, *newRecordings + size);
+        return true;
+    }
+    if (number == "")
+    {
+        printf("Number can`t be a blank space\n");
+        free(number);
+        return false;
+    }
+    printf("Enter name:\n");
+    const char* const name = readLine();
+    if (name == NULL)
+    {
+        freeData(numbers, names, *newRecordings + size);
+        free(number);
+        return true;
+    }
+    names[size + *newRecordings] = name;
+    numbers[size + *newRecordings] = number;
+    ++*newRecordings;
+    return false;
+}
+
+static bool find(char** const searchWhere, char** const searchWhat, const size_t size, const size_t newRecordings, const bool lookingForNumbers)
+{
+    readLine();
+    printf("Enter %s:\n", lookingForNumbers ? "name" : "number");
+    const char* const string = readLine();
+    if (string == NULL)
+    {
+        printf("INPUT ERROR\n");
+        freeData(searchWhere, searchWhat, newRecordings + size);
+        return true;
+    }
+    printf("%ss:\n", !lookingForNumbers ? "name" : "number");
+    for (size_t i = 0; i < size + newRecordings; ++i)
+    {
+        if (strcmp(searchWhere[i], string) == 0)
+        {
+            printf("%s\n", searchWhat[i]);
+        }
+    }
+    free(string);
+    return false;
+}
+
 int main(void)
 {
     if (tests())
@@ -68,31 +121,11 @@ int main(void)
             freeData(numbers, names, newRecordings + size);
             return ok;
         case addOperation:
-            readLine();
-            printf("Enter number:\n");
-            number = readLine();
-            if (number == NULL)
+            if (addToBook(numbers, names, size, &newRecordings))
             {
-                freeData(numbers, names, newRecordings + size);
+                printf("INPUT ERROR\n");
                 return inputError;
             }
-            if (number == "")
-            {
-                printf("Number can`t be a blank space\n");
-                free(number);
-                break;
-            }
-            printf("Enter name:\n");
-            name = readLine();
-            if (name == NULL)
-            {
-                freeData(numbers, names, newRecordings + size);
-                free(number);
-                return inputError;
-            }
-            names[size + newRecordings] = name;
-            numbers[size + newRecordings] = number;
-            ++newRecordings;
             break;
         case printOperaion:
             for (size_t i = 0; i < size + newRecordings; ++i)
@@ -101,47 +134,25 @@ int main(void)
             }
             break;
         case findPhoneOperation:
-            readLine();
-            printf("Enter name:\n");
-            name = readLine();
-            if (name == NULL)
+            if (find(names, numbers, size, newRecordings, true))
             {
-                printf("INPUT ERROR\n");
-                freeData(numbers, names, newRecordings + size);
                 return inputError;
             }
-            for (size_t i = 0; i < size + newRecordings; ++i)
-            {
-                if (strcmp(names[i], name) == 0)
-                {
-                    printf("%s\n", numbers[i]);
-                }
-            }
-            free(name);
             break;
         case findNameOperation:
-            readLine();
-            printf("Enter phone:\n");
-            number = readLine();
-            if (number == NULL)
+            if (find(numbers, names, size, newRecordings, false))
             {
-                printf("INPUT ERROR\n");
-                freeData(numbers, names, newRecordings + size);
                 return inputError;
             }
-            for (size_t i = 0; i < size + newRecordings; ++i)
-            {
-                if (strcmp(numbers[i], number) == 0)
-                {
-                    printf("%s\n", names[i]);
-                }
-            }
-            free(number);
             break;
         case saveDataOperation:
             if (writeBook(numbers, names, &size, PHONE_BOOK, &newRecordings))
             {
                 printf("ERROR IN WRITING IN THE FILE\n");
+            }
+            else
+            {
+                printf("Succesfully saved\n");
             }
             break;
         default:
