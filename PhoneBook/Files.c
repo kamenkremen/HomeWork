@@ -1,51 +1,107 @@
 #include <stdlib.h>
 #include <stdio.h>
+#include <string.h>
+#include <stdbool.h>
 
 #include "Files.h"
 
-char* readFile(const char* const fileName)
+static char* readString(FILE* const file, const char end)
+{
+    if (file == NULL)
+    {
+        return NULL;
+    }
+    char* string = (char*)calloc(1, sizeof(char));
+    if (string == NULL)
+    {
+        return NULL;
+    }
+    size_t capacity = 1;
+    size_t size = 0;
+    char symbol = fgetc(file);
+    for (; symbol != end && symbol != EOF; symbol = fgetc(file))
+    {
+        if (size + 1 >= capacity)
+        {
+            capacity *= 2;
+            char* buffer = (char*)realloc(string, capacity);
+            if (buffer == NULL)
+            {
+                free(string);
+                return NULL;
+            }
+            string = buffer;
+        }
+        string[size] = symbol;
+        ++size;
+    }
+    string[size] = '\0';
+    return string;
+}
+
+bool readBook(char* numbers[100], char* names[100], size_t* const size, const char* const fileName)
 {
     FILE* file = NULL;
     fopen_s(&file, fileName, "r");
     if (file == NULL)
     {
-        return "";
+        return true;
     }
-    char* string = (char*)calloc(1, sizeof(char));
-    if (string == NULL)
+    *size = 0;
+    while (true)
     {
-        fclose(file);
-        return NULL;
-    }
-    size_t capacity = 1;
-    size_t length = 0;
-    char symbol = 0;
-    while ((symbol = getc(file)) != EOF)
-    {
-        if (length >= capacity)
-        {
-            capacity *= 2;
-            string = (char*)realloc(string, capacity);
-            if (string == NULL)
-            {
-                fclose(file);
-                return NULL;
-            }
-        }
-        string[length] = symbol;
-        ++length;
-    }
-    if (length >= capacity)
-    {
-        ++capacity;
-        string = (char*)realloc(string, capacity);
-        if (string == NULL)
+        numbers[*size] = readString(file, ' ');
+        if (strcmp(numbers[*size], "") == 0)
         {
             fclose(file);
-            return NULL;
+            return false;
+        }
+        if (numbers[*size] == NULL)
+        {
+            for (size_t j = 0; j < *size; ++j)
+            {
+                free(names[j]);
+                free(numbers[j]);
+            }
+            fclose(file);
+            return true;
+        }
+        names[*size] = readString(file, '\n');
+        if (names[*size] == NULL)
+        {
+            for (size_t j = 0; j < *size; ++j)
+            {
+                free(numbers[j]);
+                free(names[j]);
+            }
+            free(numbers[*size]);
+            fclose(file);
+            return true;
+        }
+        ++(*size);
+    }
+    fclose(file);
+    return false;
+}
+
+bool writeBook(const char* const numbers[100], const char* const names[100], size_t* const size, const char* const fileName, size_t* const newRecordings)
+{
+    FILE* file = NULL;
+    fopen_s(&file, fileName, "a");
+    if (file == NULL)
+    {
+        return true;
+    }
+    for (size_t i = *size; i < *size + *newRecordings; ++i)
+    {
+        if (fprintf(file, "%s %s\n", numbers[i], names[i]) < 0)
+        {
+            fclose(file);
+            return true;
         }
     }
-    string[length] = '\0';
     fclose(file);
-    return string;
+    *size = *size + *newRecordings;
+    *newRecordings = 0;
+    return false;
 }
