@@ -128,15 +128,17 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Files.c" />
-    <ClCompile Include="PhoneBook.c">
+    <ClCompile Include="main.c">
       <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
+    <ClCompile Include="PhonBook.c" />
     <ClCompile Include="Strings.c" />
     <ClCompile Include="Tests.c" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="ErrorCodes.h" />
     <ClInclude Include="Files.h" />
+    <ClInclude Include="PhoneBook.h" />
     <ClInclude Include="Strings.h" />
     <ClInclude Include="Tests.h" />
   </ItemGroup>

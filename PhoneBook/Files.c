@@ -80,7 +80,7 @@ bool readBook(char* numbers[MAX_SIZE], char* names[MAX_SIZE], size_t* const size
     return false;
 }
 
-bool writeBook(const char* const numbers[100], const char* const names[100], size_t* const size, const char* const fileName, size_t* const newRecordings)
+bool writeBook(const char* const numbers[MAX_SIZE], const char* const names[MAX_SIZE], size_t* const size, const char* const fileName, size_t* const newRecordings)
 {
     FILE* file = NULL;
     fopen_s(&file, fileName, "a");
