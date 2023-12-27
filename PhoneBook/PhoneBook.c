@@ -20,6 +20,8 @@ Enter 5 to save current data\n"
 #define MAX_SIZE 100
 #define FAILED_TESTS 1
 
+// телефонная кнгиа хранится в виде номер имя, где отдельная запись находится на отдельной строrе
+
 enum Operations
 {
     exitOperation,
