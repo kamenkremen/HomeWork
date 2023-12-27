@@ -11,7 +11,6 @@ static int getPriority(const char operation)
     {
     case '*':
     case '/':
-    case '%':
         return 3;
     case '+':
     case '-':
