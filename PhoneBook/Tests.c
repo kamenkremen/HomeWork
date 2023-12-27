@@ -58,8 +58,7 @@ static int writePhoneBookTest(void)
         freeData(numbers, names, 1);
         return 3;
     }
-    free(numbers[0]);
-    free(names[0]);
+    freeData(numbers, names, 1);
     readBook(numbers, names, &size, "writingTest1.txt");
     if (newRecordings != 0 || size != 2 || strcmp(numbers[1], "2") != 0 || strcmp(names[1], "test2"))
     {
