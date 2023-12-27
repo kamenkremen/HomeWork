@@ -9,6 +9,7 @@
 #include "ErrorCodes.h"
 #include "Strings.h"
 #include "Tests.h"
+#include "PhoneBook.h"
 
 #define COMMANDS "Enter 0 to exit\n\
 Enter 1 to add new recording\n\
@@ -32,18 +33,14 @@ enum Operations
     saveDataOperation,
 };
 
-static void freeData(char** const numbers, char** const names, const size_t size)
-{
-    for (size_t i = 0; i < size; ++i)
-    {
-        free(numbers[i]);
-        free(names[i]);
-    }
-}
-
 static bool addToBook(char** const numbers, char** const names, const size_t size, size_t* const newRecordings)
 {
-    readLine();
+    if (size + *newRecordings >= 100)
+    {
+        printf("MAX AMOUNT OF RECORDINGS ACHIEVED\n");
+        return false;
+    }
+    free(readLine());
     printf("Enter number:\n");
     const char* const number = readLine();
     if (number == NULL)
@@ -73,7 +70,7 @@ static bool addToBook(char** const numbers, char** const names, const size_t siz
 
 static bool find(char** const searchWhere, char** const searchWhat, const size_t size, const size_t newRecordings, const bool lookingForNumbers)
 {
-    readLine();
+    free(readLine());
     printf("Enter %s:\n", lookingForNumbers ? "name" : "number");
     const char* const string = readLine();
     if (string == NULL)
@@ -105,8 +102,6 @@ int main(void)
     size_t size = 0;
     readBook(numbers, names, &size, PHONE_BOOK);
     size_t newRecordings = 0;
-    char* number = "";
-    char* name = "";
     while (true)
     {
         printf(COMMANDS);

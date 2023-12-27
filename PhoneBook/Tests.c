@@ -6,20 +6,12 @@
 #include "Tests.h"
 #include "Files.h"
 #include "ErrorCodes.h"
-
-static void freeData(char** const numbers, char** const names, const size_t size)
-{
-    for (size_t i = 0; i < size; ++i)
-    {
-        free(numbers[i]);
-        free(names[i]);
-    }
-}
+#include "PhoneBook.h"
 
 static int readPhoneBookTest(void)
 {
-    char* numbers[100] = { 0 };
-    char* names[100] = { 0 };
+    char* numbers[MAX_SIZE] = { 0 };
+    char* names[MAX_SIZE] = { 0 };
     size_t size = 0;
     readBook(numbers, names, &size, "test1.txt");
     if (size != 0)
@@ -39,9 +31,9 @@ static int readPhoneBookTest(void)
 
 static int writePhoneBookTest(void)
 {
-    char* numbers[100] = { 0 };
+    char* numbers[MAX_SIZE] = { 0 };
     numbers[0] = "1";
-    char* names[100] = { 0 };
+    char* names[MAX_SIZE] = { 0 };
     names[0] = "test1";
     size_t size = 0;
     size_t newRecordings = 1;

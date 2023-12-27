@@ -39,7 +39,7 @@ static char* readString(FILE* const file, const char end)
     return string;
 }
 
-bool readBook(char* numbers[100], char* names[100], size_t* const size, const char* const fileName)
+bool readBook(char* numbers[MAX_SIZE], char* names[MAX_SIZE], size_t* const size, const char* const fileName)
 {
     FILE* file = NULL;
     fopen_s(&file, fileName, "r");
@@ -58,27 +58,23 @@ bool readBook(char* numbers[100], char* names[100], size_t* const size, const ch
         }
         if (numbers[*size] == NULL)
         {
-            for (size_t j = 0; j < *size; ++j)
-            {
-                free(names[j]);
-                free(numbers[j]);
-            }
+            freeData(numbers, names, *size);
             fclose(file);
             return true;
         }
         names[*size] = readString(file, '\n');
         if (names[*size] == NULL)
         {
-            for (size_t j = 0; j < *size; ++j)
-            {
-                free(numbers[j]);
-                free(names[j]);
-            }
+            freeData(numbers, names, *size);
             free(numbers[*size]);
             fclose(file);
             return true;
         }
         ++(*size);
+        if (*size >= MAX_SIZE - 1)
+        {
+            break;
+        }
     }
     fclose(file);
     return false;
@@ -92,7 +88,8 @@ bool writeBook(const char* const numbers[100], const char* const names[100], siz
     {
         return true;
     }
-    for (size_t i = *size; i < *size + *newRecordings; ++i)
+    const size_t newSize = MAX_SIZE < *size + *newRecordings ? MAX_SIZE : *size + *newRecordings;
+    for (size_t i = *size; i < newSize; ++i)
     {
         if (fprintf(file, "%s %s\n", numbers[i], names[i]) < 0)
         {
@@ -101,7 +98,7 @@ bool writeBook(const char* const numbers[100], const char* const names[100], siz
         }
     }
     fclose(file);
-    *size = *size + *newRecordings;
+    *size = newSize;
     *newRecordings = 0;
     return false;
 }
