@@ -15,8 +15,6 @@ static int getPriority(const char operation)
     case '+':
     case '-':
         return 2;
-    case '=':
-        return 1;
     default:
         return 0;
     }
@@ -24,7 +22,7 @@ static int getPriority(const char operation)
 
 static bool isOperation(const char c)
 {
-    return c == '+' || c == '-' || c == '/' || c == '*' || c == '=';
+    return c == '+' || c == '-' || c == '/' || c == '*';
 }
 
 static bool isToken(const char c)
